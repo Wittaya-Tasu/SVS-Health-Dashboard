@@ -1,5 +1,5 @@
-// Public connection settings only. Never place a secret, password, or user list here.
+// ค่าการเชื่อมต่อที่เปิดเผยได้ ห้ามใส่ Client Secret ในไฟล์นี้
 window.SVS_CONFIG = {
-  apiUrl: '', https://script.google.com/macros/s/AKfycbwKLkyVPhGLIYxo09qWRTBrxS1AmVWRPWkiW7jQ97sRhEVQCu32W_4bC52tuJOZ3_qY/exec
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxa1qr-gzpA_XHbLf7AJaJTzxe2yWgx37dqXaedn2EvArsN7gW7xC_k9kUmvcvmclJ3/exec',
   appName: 'SVS Health Dashboard'
 };
