@@ -51,3 +51,32 @@ body.login-page main{max-width:none;padding:0;min-height:100svh}
 @media(min-width:1700px){.signin-card{padding:60px 40px}.login-story{padding-top:65px}.farm-scene{margin-top:10px}}
 @media(max-width:1000px){.login-layout{grid-template-columns:minmax(0,1.2fr) minmax(310px,1fr);gap:24px}.login-story{min-height:530px;padding-top:40px}.signin-card{padding:34px 22px}.login-title-block h1{letter-spacing:-.8px}.farm-scene{width:125%;margin-left:-12%}.login-kicker{letter-spacing:2px}}
 @media(max-width:720px){.login-screen{padding:24px 20px}.login-kicker{font-size:8px;letter-spacing:1.5px}.login-layout{grid-template-columns:1fr;gap:0;min-height:0}.login-story{min-height:0;padding-top:28px}.login-title-block{margin:0 auto}.login-title-block h1{font-size:clamp(24px,6.7vw,44px);letter-spacing:-.8px}.login-byline{font-size:11px;margin-top:7px}.login-story h2{text-align:center;font-size:23px;margin-top:24px}.login-accent{margin:16px auto}.login-description{text-align:center;font-size:14px;max-width:none}.farm-scene{width:100%;max-width:480px;margin:-5px auto -15px}.signin-card{max-width:480px;margin:0 auto 22px;padding:28px 24px;border-radius:20px}.signin-logo{max-width:230px;margin-bottom:18px}.signin-card h2{font-size:28px}.signin-description{font-size:15px;margin-bottom:22px}.google-login{min-height:56px;font-size:16px}.login-signoff{text-align:center;font-size:8px;letter-spacing:1.5px}}
+
+/* Overview v0.1.3 */
+.header-logo-tile{width:64px;height:64px;flex-shrink:0;display:grid;place-items:center;background:#eaf3f1;border:1px solid #dcebe7;border-radius:14px;padding:5px}
+.header-logo-tile .header-svs-logo{width:100%;height:auto}
+.summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.overview-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.prrs-options button{display:inline-flex;align-items:center;gap:7px}
+.prrs-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.prrs-dot.Unstable{background:#a91e30}.prrs-dot.StableActive{background:#ed8a26}.prrs-dot.StableInactive{background:#e1c344}.prrs-dot.FreePRRS{background:#248553}
+@media(max-width:800px){.pagehead{align-items:flex-start;flex-wrap:wrap}.overview-actions{justify-content:flex-start}.summary{gap:8px}.stat{padding:12px 8px}.stat .sicon{display:none}.stat p{font-size:.75rem}.header-logo-tile{width:52px;height:52px}}
+@media(max-width:450px){.summary{grid-template-columns:1fr}.stat{gap:10px}.stat>div:last-child{display:flex;align-items:center;gap:14px}.stat p{margin:0}}
+
+/* v0.1.4: balanced region columns; prefix removal is presentation only. */
+.board-scroll{width:100%;overflow-x:auto;padding-bottom:10px;overscroll-behavior-x:contain}
+.balanced-board{grid-template-columns:var(--region-tracks);gap:10px}
+.balanced-board .region:only-child{max-width:none}
+.balanced-board .layer{min-height:0;padding:10px 8px}
+.farm-columns{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start}
+.farm-columns.two-columns{grid-template-columns:repeat(2,minmax(0,1fr))}
+.farm-column{min-width:0}
+.board .farm{padding:7px 8px;min-height:44px;margin-bottom:5px}
+.board .farmname{font-weight:400;font-size:.84rem;gap:4px;line-height:1.5}
+.board .farm.has-status .farmname{font-weight:600}
+.farm-label{min-width:0;overflow-wrap:anywhere}
+.board .farm .icons:empty{display:none}
+.board .farm .icons{flex-wrap:wrap}
+@media(max-width:1100px){.balanced-board{grid-template-columns:repeat(2,minmax(0,1fr))}.balanced-board .region-wide{grid-column:1/-1}}
+@media(max-width:600px){.balanced-board{grid-template-columns:minmax(0,1fr)}.balanced-board .region-wide{grid-column:auto}.board-scroll{overflow-x:visible}}
+@media(max-width:360px){.farm-columns.two-columns{grid-template-columns:minmax(0,1fr)}}
