@@ -18,3 +18,36 @@
 }
 .board .farm .icons { flex-wrap: wrap; max-width: 100%; }
 .board .farm > .badge { margin-top: 4px; }
+
+/* Farm Health Dashboard login, based on the selected navy farm illustration. */
+body.login-page{background:#06233e;color:#fff}
+body.login-page>header,body.login-page>footer{display:none}
+body.login-page main{max-width:none;padding:0;min-height:100svh}
+.login-screen{position:relative;isolation:isolate;overflow:hidden;min-height:100svh;padding:34px clamp(24px,4.5vw,90px) 28px;background:radial-gradient(ellipse at 90% 10%,#10587a 0,transparent 56%),linear-gradient(125deg,#071d39,#06394e)}
+.login-screen::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(155deg,transparent 40%,#08728222 40%,transparent 72%)}
+.login-kicker{font-size:10px;letter-spacing:3.5px;color:#accade;margin:0;line-height:1.8}
+.login-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr);gap:clamp(28px,4vw,72px);align-items:center;min-height:calc(100svh - 110px)}
+.login-story{position:relative;align-self:stretch;padding-top:48px;min-height:640px}
+.login-title-block{display:table;max-width:100%}
+.login-title-block h1{font-size:clamp(27px,3.4vw,66px);line-height:1.17;font-weight:700;letter-spacing:-1.4px;margin:0;color:white}
+.login-byline{font-size:clamp(11px,1.05vw,17px);text-align:right;color:#bad3df;margin:10px 0 0;line-height:1.5}
+.login-story h2{font-size:clamp(22px,2.3vw,40px);line-height:1.5;margin:28px 0 0;color:#e8f5fc}
+.login-accent{width:76px;height:5px;border-radius:9px;background:#24d890;margin:25px 0 20px}
+.login-description{font-size:clamp(14px,1.25vw,20px);color:#accbdc;line-height:1.7;margin:0;max-width:420px}
+.farm-scene{display:block;width:112%;max-width:none;margin:0 0 -12px -6%;height:auto;pointer-events:none}
+.signin-card{background:linear-gradient(150deg,#fff,#f9fbff);color:#102b46;border:1px solid #dbe8ee;border-radius:24px;padding:48px 34px 44px;text-align:center;box-shadow:0 24px 70px #00132140;width:100%;margin:28px 0;}
+/* Reference logo occupied 100% of this base: display at 80%. */
+.signin-logo{width:80%;max-width:352px;height:auto;display:block;margin:0 auto 24px}
+.signin-card h2{font-size:clamp(26px,2.5vw,38px);font-weight:700;margin:0 0 8px;line-height:1.5}
+.signin-description{font-size:clamp(14px,1.3vw,20px);color:#63758c;margin:0 0 32px;line-height:1.7}
+.google-login{display:flex;width:100%;align-items:center;justify-content:center;gap:15px;min-height:62px;padding:13px 16px;border:1px solid #c5d4e2;border-radius:10px;background:white;color:#175cba;font-size:clamp(14px,1.35vw,20px);font-weight:600;box-shadow:0 2px 5px #1d345514}
+.google-login:hover{background:#f1f7ff;border-color:#7aaddd;box-shadow:0 4px 14px #194e8a20}
+.google-login svg{width:25px;height:25px;flex-shrink:0}.google-login .login-arrow{margin-left:auto;font-size:24px;font-weight:400}
+.google-login span:nth-child(2){flex:1}
+.signin-card .errorbox{text-align:left;margin:16px 0}.signin-card .notice{text-align:left}
+.login-signoff{font-size:10px;letter-spacing:2.5px;color:#8cafc2;line-height:1.8;margin:10px 0 0}
+.brand .brand-credit{display:block;text-align:right;font-size:.65rem;letter-spacing:0}
+.header-svs-logo{width:65px;height:auto;object-fit:contain}
+@media(min-width:1700px){.signin-card{padding:60px 40px}.login-story{padding-top:65px}.farm-scene{margin-top:10px}}
+@media(max-width:1000px){.login-layout{grid-template-columns:minmax(0,1.2fr) minmax(310px,1fr);gap:24px}.login-story{min-height:530px;padding-top:40px}.signin-card{padding:34px 22px}.login-title-block h1{letter-spacing:-.8px}.farm-scene{width:125%;margin-left:-12%}.login-kicker{letter-spacing:2px}}
+@media(max-width:720px){.login-screen{padding:24px 20px}.login-kicker{font-size:8px;letter-spacing:1.5px}.login-layout{grid-template-columns:1fr;gap:0;min-height:0}.login-story{min-height:0;padding-top:28px}.login-title-block{margin:0 auto}.login-title-block h1{font-size:clamp(24px,6.7vw,44px);letter-spacing:-.8px}.login-byline{font-size:11px;margin-top:7px}.login-story h2{text-align:center;font-size:23px;margin-top:24px}.login-accent{margin:16px auto}.login-description{text-align:center;font-size:14px;max-width:none}.farm-scene{width:100%;max-width:480px;margin:-5px auto -15px}.signin-card{max-width:480px;margin:0 auto 22px;padding:28px 24px;border-radius:20px}.signin-logo{max-width:230px;margin-bottom:18px}.signin-card h2{font-size:28px}.signin-description{font-size:15px;margin-bottom:22px}.google-login{min-height:56px;font-size:16px}.login-signoff{text-align:center;font-size:8px;letter-spacing:1.5px}}
