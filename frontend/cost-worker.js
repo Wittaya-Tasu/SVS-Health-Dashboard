@@ -1,0 +1,2 @@
+importScripts('./vendor/xlsx.full.min.js','./cost-core.js');
+self.onmessage=e=>{try{const {kind,buffer,name}=e.data,wb=XLSX.read(buffer,{type:'array',cellDates:false});const sheet=kind==='pivot'?wb.Sheets.DATA:wb.Sheets[wb.SheetNames[0]];if(!sheet)throw Error('ไม่พบชีต DATA');const data=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null,raw:true});postMessage({ok:true,data:kind==='pivot'?Cost028.readPivot(data,name):Cost028.readKPI(data,name)});}catch(e){postMessage({ok:false,error:e.message});}};
