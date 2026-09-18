@@ -27,7 +27,7 @@ function uiDrawer032(title,body,apply){const d=document.createElement('dialog');
 function uiChecks032(key,items,selected){return `<div class="ui-checks032">${items.map(([v,l])=>`<label><input type="checkbox" data-check032="${key}" value="${esc(v)}" ${selected.includes(String(v))?'checked':''}>${esc(l)}</label>`).join('')}</div>`;}
 function uiChecked032(d,key){return [...d.querySelectorAll(`[data-check032="${key}"]:checked`)].map(e=>e.value);}
 function uiChips032(items){return `<div class="ui-chips032">${items.filter(x=>x[1]).map(([k,l])=>`<button data-clear032="${k}" title="ล้างตัวกรอง ${esc(l)}">${esc(l)} <span aria-hidden="true">×</span></button>`).join('')}</div>`;}
-function uiCore032(){if(window.Cost028)return Promise.resolve();if(UI032.corePromise)return UI032.corePromise;UI032.corePromise=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='./cost-core.js?v=32';s.onload=resolve;s.onerror=()=>{UI032.corePromise=null;s.remove();reject(Error('โหลดโมดูลต้นทุนไม่สำเร็จ กรุณาลองใหม่'));};document.head.appendChild(s);});return UI032.corePromise;}
+function uiCore032(){if(window.Cost028)return Promise.resolve();if(UI032.corePromise)return UI032.corePromise;UI032.corePromise=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='./cost-core.js?v=33r1';s.onload=resolve;s.onerror=()=>{UI032.corePromise=null;s.remove();reject(Error('โหลดโมดูลต้นทุนไม่สำเร็จ กรุณาลองใหม่'));};document.head.appendChild(s);});return UI032.corePromise;}
 // Cost: use the existing calculation/export engine; only compute the selected view.
 CP028.compareMode032='colors';
 const uiOldCPReset032=cpReset028;
@@ -101,4 +101,4 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 // Normalize laboratory controls without affecting their table or export logic.
 const uiOldLab032=renderLab;
 renderLab=function(target){uiOldLab032(target);const row=target.querySelector('.panelhead .controlrow');if(row){row.classList.add('ui-filterrow032');for(const [id,name] of [['labSample017','ประเภทตัวอย่าง'],['labYear','ปี']]){const el=$('#'+id);if(el){const label=document.createElement('label');label.textContent=name;el.before(label);const multi=el.nextElementSibling;label.append(el);if(multi?.classList.contains('multi016'))label.append(multi);}}const seg=row.querySelector('.segmented');if(seg)uiDisplay032(seg); }uiShell032();};
-start();
+// Started after map module.
