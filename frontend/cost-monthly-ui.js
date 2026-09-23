@@ -5,16 +5,16 @@ CP028.monthColors034=['red'];
 UI_CP_KEYS032.push('stackColors034','monthColors034');
 const cpResetBefore034=cpReset028;
 cpReset028=function(){cpResetBefore034();CP028.stackColors034=[...CostMonthly034.colors];CP028.monthColors034=['red'];};
-function cpMonthlyData034(){return CostMonthly034.build(CP028.data,{year:CP028.year,group:CP028.group,regions:CP028.regions,types:CP028.types,bus:CP028.bus,exclude:CP028.exclude,targetYear:CP028.targetYear,typeOf:farmType023},Cost028);}
+function cpMonthlyData034(){return CostMonthly034.build(CP028.data,{year:CP028.year,group:CP028.group,regions:CP028.regions,types:CP028.types,bus:CP028.bus,exclude:CP028.exclude,targetYear:CP028.targetYear,basis:CP028.compareBasis035||'month',typeOf:farmType023},Cost028);}
 function cpMonthColors034(kind){return CostMonthly034.colors.filter(c=>(CP028[kind==='stack'?'stackColors034':'monthColors034']||[]).includes(c));}
 function cpMonthTools034(kind){const selected=cpMonthColors034(kind);return `<div class="cp-color-picks034" role="group" aria-label="เลือกกลุ่มสี"><span>กลุ่มสี</span>${CostMonthly034.colors.map(c=>`<label class="${selected.includes(c)?'selected':''}"><input type="checkbox" data-cp-color034="${kind}" value="${c}" ${selected.includes(c)?'checked':''}><i style="background:${CP_COLORS028[c]}"></i>${CP_COLOR_NAMES031[c]}</label>`).join('')}<button data-cp-all034="${kind}">ทุกสี</button></div>`;}
-function cpMonthScope034(colors,annual=false){return `<p class="cp-month-context034">${cpEsc028(Cost028.groups[CP028.group].label)} · ปี ${CP028.year+543} (${CP028.year}) · ${annual?'ม.ค.–ธ.ค.':CP_MONTHS028[CP028.from-1]+'–'+CP_MONTHS028[CP028.to-1]} · ${cpEsc028(CP028.regions.join(', ')||'ทุกภาค')} · กลุ่มสี: ${colors.map(c=>CP_COLOR_NAMES031[c]).join(', ')||'ยังไม่เลือก'} · เทียบ KPI จากต้นทุนรายเดือน</p>`;}
+function cpMonthScope034(colors,annual=false){return `<p class="cp-month-context034">${cpEsc028(Cost028.groups[CP028.group].label)} · ปี ${CP028.year+543} (${CP028.year}) · ${annual?'ม.ค.–ธ.ค.':CP_MONTHS028[CP028.from-1]+'–'+CP_MONTHS028[CP028.to-1]} · ${cpEsc028(CP028.regions.join(', ')||'ทุกภาค')} · กลุ่มสี: ${colors.map(c=>CP_COLOR_NAMES031[c]).join(', ')||'ยังไม่เลือก'} · เทียบ KPI จากต้นทุน${cpBasisLabel035()}</p>`;}
 function cpMonthLegend034(colors){return `<div class="cp-legend">${colors.map(c=>`<span><i style="background:${CP_COLORS028[c]}"></i>${CP_COLOR_NAMES031[c]}: ${CP_LABELS028[c]}</span>`).join('')}</div>`;}
 function cpMonthColgroup034(n){return `<colgroup><col style="width:7%">${Array.from({length:n},()=>`<col style="width:${93/n}%">`).join('')}</colgroup>`;}
 function cpMonthFarm034(f,m,streak=false){const item=f.months[m-1],c=item.category,run=streak&&c==='red'?Math.min(3,item.redRun):0;
  const shade=run?['','#fbe4e8','#ed9aaa','#9f1832'][run]:({red:'#fbe4e8',orange:'#fff0d8',yellow:'#fff7cb',green:'#e1f1e7'})[c];
  const ink=run===3?'#ffffff':'#263e43';
- const title=`${f.name} · ${CP_MONTHS028[m-1]} ${CP028.year+543} · ${CP_COLOR_NAMES031[c]} · ตาย-คัดทิ้ง ${cpN028(item.values.deadcull)} · ยา-วัคซีน ${cpN028(item.values.medvac)} ${Cost028.groups[CP028.group].unit}${c==='red'?' · แดงต่อเนื่อง '+item.redRun+' เดือน':''}`;
+ const title=`${f.name} · ${cpBasisLabel035()} · ${CP_MONTHS028[m-1]} ${CP028.year+543} · ${CP_COLOR_NAMES031[c]} · ตาย-คัดทิ้ง ${cpN028(item.values.deadcull)} · ยา-วัคซีน ${cpN028(item.values.medvac)} ${Cost028.groups[CP028.group].unit}${c==='red'?' · แดงต่อเนื่อง '+item.redRun+' เดือน':''}`;
  return `<button class="cp-month-farm034" data-cp-farm="${cpEsc028(f.id)}" data-month034="${m}" data-color034="${c}" data-run034="${run}" style="background:${shade};color:${ink};border-left:3px solid ${CP_COLORS028[c]}" title="${cpEsc028(title)}"><span>${cpEsc028(f.name)}</span>${streak&&c==='red'?`<small>${item.redRun>=3?'3+':item.redRun} เดือน</small>`:''}</button>`;
 }
 function cpStack034(model){
@@ -52,8 +52,15 @@ cpBind028=function(){cpBindBefore034();
  document.querySelectorAll('[data-cp-color034]').forEach(el=>el.onchange=()=>{const kind=el.dataset.cpColor034,key=kind==='stack'?'stackColors034':'monthColors034';CP028[key]=[...document.querySelectorAll(`[data-cp-color034="${kind}"]:checked`)].map(i=>i.value);cpRender028();const restore=document.querySelector(`[data-cp-color034="${kind}"][value="${el.value}"]`);restore?.focus();});
  document.querySelectorAll('[data-cp-all034]').forEach(b=>b.onclick=()=>{CP028[b.dataset.cpAll034==='stack'?'stackColors034':'monthColors034']=[...CostMonthly034.colors];cpRender028();});
  // A monthly farm link opens that month, so a farm outside the top date range still resolves.
- document.querySelectorAll('[data-cp-farm][data-month034]').forEach(b=>{b.onclick=()=>{CP028.farm=b.dataset.cpFarm;CP028.search='';CP028.from=CP028.to=Number(b.dataset.month034);CP028.view='farm';cpRender028();};});
+ if(cpIsCumulative035())document.querySelectorAll('[data-cp-farm]:not([data-month034])').forEach(b=>{const open=b.onclick;b.onclick=()=>{CP028.from=1;open?.();};});
+ document.querySelectorAll('[data-cp-farm][data-month034]').forEach(b=>{b.onclick=()=>{CP028.farm=b.dataset.cpFarm;CP028.search='';CP028.to=Number(b.dataset.month034);CP028.from=cpIsCumulative035()?1:CP028.to;CP028.view='farm';cpRender028();};});
 };
 
 const cpMetaBefore034=cpMeta028;
-cpMeta028=function(){const html=cpMetaBefore034();return CP028.view==='compare'&&CP028.compareMode032==='monthly-regions'?html.replace(CP_MONTHS028[CP028.from-1]+'–'+CP_MONTHS028[CP028.to-1],'ม.ค.–ธ.ค.'):html;};
+cpMeta028=function(){let html=cpMetaBefore034();if(CP028.view!=='compare')return html;
+ const annual=['monthly-regions','months'].includes(CP028.compareMode032);
+ if(annual)html=html.replace(CP_MONTHS028[CP028.from-1]+'–'+CP_MONTHS028[CP028.to-1],'ม.ค.–ธ.ค.');
+ const timeline=['monthly-stack','monthly-regions','months'].includes(CP028.compareMode032);
+ const basis=cpIsCumulative035()?(timeline?'ข้อมูลสะสม: ม.ค. ถึงแต่ละเดือน · เริ่มใหม่ทุกปี':'ข้อมูลสะสม: ม.ค.–'+CP_MONTHS028[CP028.to-1]):'ข้อมูลรายเดือน'+(timeline?'':' · รวมตามช่วงเดือนที่เลือก');
+ return html+`<p class="cp-basis035"><strong>${basis}</strong></p>`;
+};

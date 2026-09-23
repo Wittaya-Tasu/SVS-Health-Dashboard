@@ -19,9 +19,13 @@
   }
   const byFarm=[];
   for(const [id,periods] of buckets){
-   let run=0;const months=[];
+   let run=0,cumulative=[];const months=[];
    for(let serial=(year-1)*12;serial<(year+1)*12;serial++){
-    const rows=periods.get(serial)||[],y=Math.floor(serial/12),values=engine.rates(rows);
+    const rows=periods.get(serial)||[],y=Math.floor(serial/12);
+    if(serial%12===0)cumulative=[];
+    cumulative.push(...rows);
+    // Keep unreported months blank; never carry a value into a missing/future month.
+    const values=engine.rates(rows.length&&scope.basis==='cum'?cumulative:rows);
     const target=data.kpis[scope.targetYear||y]?.targets?.[group];
     const category=rows.length?engine.category(values,target):null;
     run=category==='red'?run+1:0;
