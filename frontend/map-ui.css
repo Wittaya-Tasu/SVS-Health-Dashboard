@@ -1,1 +1,38 @@
 .geo-map-layout033{display:grid;grid-template-columns:minmax(300px,2fr) minmax(220px,1fr);gap:30px;align-items:center}.geo-canvas033{height:660px;max-height:75vh;min-height:400px;background:white}.geo-svg033{display:block;width:100%;height:100%;touch-action:none}.geo-svg033 [role=button]{cursor:pointer}.geo-svg033 [role=button]:focus{outline:none;stroke:#123d43;stroke-width:1.4}.geo-tools033{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.geo-tools033 label{display:flex;gap:6px;align-items:center}.geo-scope033{color:#526e72;font-size:13px;line-height:1.7}.geo-info033>b{font-size:30px;color:#123d43}.geo-info033 small{display:block;color:#76848a;font-size:12px}.geo-legend033{margin:24px 0}.geo-legend033>div{display:flex;gap:10px;align-items:center;margin:12px 0}.geo-legend033 i{width:16px;height:16px;border-radius:3px;flex:none}.geo-credit033{font-size:10px;color:#88938d;display:block;margin-top:12px}.geo-color033{display:flex!important;align-items:center;justify-content:space-between;gap:20px}.geo-color033 input{width:70px;height:35px;padding:2px}.geo-risk-bars033>div{display:grid;grid-template-columns:minmax(110px,1fr) 2fr 40px;align-items:center;gap:12px;margin:16px 0;font-size:13px}.geo-risk-track033{height:16px;background:#f0f4f4;border-radius:3px;overflow:hidden}.geo-risk-track033 i{display:block;height:100%}.geo-info033 p{font-size:14px}.geo-data-at033{color:#82918e}@media(max-width:700px){.geo-map-layout033{grid-template-columns:1fr;gap:12px}.geo-canvas033{height:520px}.geo-info033>b{font-size:22px}.geo-legend033{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}.geo-legend033>div{margin:4px 0;font-size:12px}.geo-tools033 button{padding:7px 10px}.geo-info033{border-top:1px solid #e2eaea;padding-top:14px}}
+/* SVS039: summary / map / disease facet, scoped to disease analytics. */
+.geo-disease-panel039 .geo-map-layout033{grid-template-columns:minmax(180px,1fr) minmax(300px,1.8fr) minmax(230px,1.2fr);gap:28px}
+.geo-disease-panel039 .geo-info033{min-width:0}
+.geo-disease-panel039 .geo-canvas033{min-width:0}
+.geo-disease-panel039 .geo-canvas033>img{width:100%;height:100%;object-fit:contain}
+.geo-disease-list039{min-width:0;border:1px solid #dde8e7;border-radius:12px;padding:16px;background:#fff}
+.geo-disease-heading039{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.geo-disease-heading039 h3{font-size:16px;margin:0;color:#203d45}
+.geo-all039{font-size:12px;padding:6px 10px;white-space:nowrap}
+.geo-disease-caption039{display:block;color:#647c7f;font-size:11px;line-height:1.6;margin:8px 0 12px}
+.geo-disease-table039{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px}
+.geo-disease-table039 th,.geo-disease-table039 td{padding:0!important;border:0!important;border-bottom:1px solid #e0e9e8!important;background:#fff;text-align:left;vertical-align:middle;overflow-wrap:anywhere}
+.geo-disease-table039 th{background:#eff5f4!important;padding:10px!important;font-weight:600}
+.geo-disease-table039 th:last-child,.geo-disease-table039 td:last-child{width:64px;text-align:right;padding:10px!important;font-variant-numeric:tabular-nums}
+.geo-disease-choice039{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:10px!important;border:0!important;border-radius:0!important;background:transparent!important;text-align:left;color:inherit;font:inherit;line-height:1.5;box-shadow:none!important}
+.geo-disease-check039{width:16px;flex:none;color:#176b67}
+.geo-disease-table039 .geo-selected039 td{background:#e9f4f1!important;color:#135f5b;font-weight:600}
+.geo-disease-choice039:hover{background:#f1f7f5!important}.geo-disease-choice039:focus-visible{outline:2px solid #176b67;outline-offset:-3px}
+.geo-disease-table039 .geo-empty039{padding:16px!important;color:#76848a;text-align:center}
+.geo-disease-panel039 .geo-tools033{justify-content:flex-start}
+@media(max-width:1050px){.geo-disease-panel039 .geo-map-layout033{grid-template-columns:minmax(170px,1fr) minmax(260px,1.5fr);gap:20px}.geo-disease-panel039 .geo-disease-list039{grid-column:1/-1}.geo-disease-panel039 .geo-canvas033{height:560px}}
+@media(max-width:620px){.geo-disease-panel039 .geo-map-layout033{grid-template-columns:minmax(0,1fr);gap:16px}.geo-disease-panel039 .geo-info033{border:0;padding:0}.geo-disease-panel039 .geo-canvas033{height:500px;max-height:none;min-height:0}.geo-disease-panel039 .geo-tools033 button,.geo-disease-panel039 .geo-tools033 summary{font-size:12px}.geo-disease-panel039 .geo-info033>b{font-size:26px}}
+/* Exports keep the desktop three-column composition, even from a phone. */
+.geo-export039,.geo-export039 *{box-sizing:border-box}
+.geo-export039{color:#203d45;font-family:'Noto Sans Thai',Tahoma,sans-serif;font-size:16px}
+.geo-export039 h1{font-size:28px;margin:0 0 16px}
+.geo-export039 .panel{border:1px solid #dde8e7;border-radius:12px;padding:24px;margin:0 0 20px;background:#fff}
+.geo-export039 .panelhead h2{font-size:20px;margin:0}
+.geo-export039 .geo-disease-panel039 .geo-map-layout033,.da-export021 .geo-disease-panel039 .geo-map-layout033{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1.2fr);gap:28px}
+.geo-export039 .geo-disease-list039,.da-export021 .geo-disease-list039{grid-column:auto}
+.geo-export039 .geo-canvas033,.da-export021 .geo-disease-panel039 .geo-canvas033{height:680px;max-height:none;min-height:0}
+.geo-export039 .geo-info033,.da-export021 .geo-disease-panel039 .geo-info033{border:0;padding:0}
+.geo-export039 .geo-info033>b,.da-export021 .geo-disease-panel039 .geo-info033>b{font-size:30px}
+.geo-export039 .geo-legend033,.da-export021 .geo-disease-panel039 .geo-legend033{display:block;margin:24px 0}
+.geo-export039 .da-only-screen021{display:none!important}
+
+.geo-disease-panel039 .geo-canvas033{display:flex;justify-content:center;align-items:center}
