@@ -2,6 +2,11 @@
 (function(root){
  'use strict';
  const colors=['red','orange','yellow','green'];
+ // Counts are head (จำนวนหมูดี), never the kg denominator or farm capacity.
+ // An incomplete total is unknown: do not inflate percentages by omitting it.
+ function sumHeads(values){return values.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0)?null:values.reduce((a,b)=>a+b,0);}
+ function headShare(head,total){return typeof head==='number'&&Number.isFinite(head)&&head>=0&&typeof total==='number'&&Number.isFinite(total)&&total>0?head/total*100:null;}
+
  function build(data,scope,engine){
   const year=Number(scope.year),group=scope.group;
   const farms=new Map(data.farms.filter(f=>
@@ -25,11 +30,11 @@
     if(serial%12===0)cumulative=[];
     cumulative.push(...rows);
     // Keep unreported months blank; never carry a value into a missing/future month.
-    const values=engine.rates(rows.length&&scope.basis==='cum'?cumulative:rows);
+    const used=rows.length&&scope.basis==='cum'?cumulative:rows,values=engine.rates(used),head=rows.length?sumHeads(used.map(r=>r.head)):null;
     const target=data.kpis[scope.targetYear||y]?.targets?.[group];
     const category=rows.length?engine.category(values,target):null;
     run=category==='red'?run+1:0;
-    if(y===year)months.push({month:serial%12+1,category,redRun:run,values,sourceRows:rows.length});
+    if(y===year)months.push({month:serial%12+1,category,redRun:run,values,head,sourceRows:rows.length});
    }
    if(months.some(m=>m.sourceRows))byFarm.push({...farms.get(id),months});
   }
@@ -37,10 +42,11 @@
   const months=Array.from({length:12},(_,i)=>{
    const groups=Object.fromEntries([...colors,'unknown'].map(c=>[c,[]]));
    byFarm.forEach(f=>{const c=f.months[i].category;if(c)groups[c].push(f);});
-   return {month:i+1,groups,total:Object.values(groups).reduce((n,fs)=>n+fs.length,0),classified:colors.reduce((n,c)=>n+groups[c].length,0)};
+   const headTotals={all:sumHeads(Object.values(groups).flat().map(f=>f.months[i].head)),colors:Object.fromEntries(colors.map(c=>[c,sumHeads(groups[c].map(f=>f.months[i].head))]))};
+   return {month:i+1,groups,headTotals,total:Object.values(groups).reduce((n,fs)=>n+fs.length,0),classified:colors.reduce((n,c)=>n+groups[c].length,0)};
   });
   return {year,group,byFarm,months};
  }
- root.CostMonthly034={build,colors};
+ root.CostMonthly034={build,colors,sumHeads,headShare};
  if(typeof module!=='undefined')module.exports=root.CostMonthly034;
 })(typeof globalThis!=='undefined'?globalThis:this);

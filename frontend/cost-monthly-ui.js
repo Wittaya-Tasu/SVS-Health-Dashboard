@@ -2,20 +2,22 @@
 'use strict';
 CP028.stackColors034=['red','orange','yellow','green'];
 CP028.monthColors034=['red'];
-UI_CP_KEYS032.push('stackColors034','monthColors034');
+CP028.pigShare036='off';
+UI_CP_KEYS032.push('stackColors034','monthColors034','pigShare036');
 const cpResetBefore034=cpReset028;
-cpReset028=function(){cpResetBefore034();CP028.stackColors034=[...CostMonthly034.colors];CP028.monthColors034=['red'];};
+cpReset028=function(){cpResetBefore034();CP028.stackColors034=[...CostMonthly034.colors];CP028.monthColors034=['red'];CP028.pigShare036='off';};
 function cpMonthlyData034(){return CostMonthly034.build(CP028.data,{year:CP028.year,group:CP028.group,regions:CP028.regions,types:CP028.types,bus:CP028.bus,exclude:CP028.exclude,targetYear:CP028.targetYear,basis:CP028.compareBasis035||'month',typeOf:farmType023},Cost028);}
 function cpMonthColors034(kind){return CostMonthly034.colors.filter(c=>(CP028[kind==='stack'?'stackColors034':'monthColors034']||[]).includes(c));}
-function cpMonthTools034(kind){const selected=cpMonthColors034(kind);return `<div class="cp-color-picks034" role="group" aria-label="เลือกกลุ่มสี"><span>กลุ่มสี</span>${CostMonthly034.colors.map(c=>`<label class="${selected.includes(c)?'selected':''}"><input type="checkbox" data-cp-color034="${kind}" value="${c}" ${selected.includes(c)?'checked':''}><i style="background:${CP_COLORS028[c]}"></i>${CP_COLOR_NAMES031[c]}</label>`).join('')}<button data-cp-all034="${kind}">ทุกสี</button></div>`;}
+function cpMonthTools034(kind){const selected=cpMonthColors034(kind);return `<div class="cp-color-picks034" role="group" aria-label="เลือกกลุ่มสี"><span>กลุ่มสี</span>${CostMonthly034.colors.map(c=>`<label class="${selected.includes(c)?'selected':''}"><input type="checkbox" data-cp-color034="${kind}" value="${c}" ${selected.includes(c)?'checked':''}><i style="background:${CP_COLORS028[c]}"></i>${CP_COLOR_NAMES031[c]}</label>`).join('')}<button data-cp-all034="${kind}">ทุกสี</button>${kind==='stack'?cpPigTools036():''}</div>`;}
 function cpMonthScope034(colors,annual=false){return `<p class="cp-month-context034">${cpEsc028(Cost028.groups[CP028.group].label)} · ปี ${CP028.year+543} (${CP028.year}) · ${annual?'ม.ค.–ธ.ค.':CP_MONTHS028[CP028.from-1]+'–'+CP_MONTHS028[CP028.to-1]} · ${cpEsc028(CP028.regions.join(', ')||'ทุกภาค')} · กลุ่มสี: ${colors.map(c=>CP_COLOR_NAMES031[c]).join(', ')||'ยังไม่เลือก'} · เทียบ KPI จากต้นทุน${cpBasisLabel035()}</p>`;}
 function cpMonthLegend034(colors){return `<div class="cp-legend">${colors.map(c=>`<span><i style="background:${CP_COLORS028[c]}"></i>${CP_COLOR_NAMES031[c]}: ${CP_LABELS028[c]}</span>`).join('')}</div>`;}
 function cpMonthColgroup034(n){return `<colgroup><col style="width:7%">${Array.from({length:n},()=>`<col style="width:${93/n}%">`).join('')}</colgroup>`;}
-function cpMonthFarm034(f,m,streak=false){const item=f.months[m-1],c=item.category,run=streak&&c==='red'?Math.min(3,item.redRun):0;
+function cpMonthFarm034(f,m,streak=false,share=null){const item=f.months[m-1],c=item.category,run=streak&&c==='red'?Math.min(3,item.redRun):0;
  const shade=run?['','#fbe4e8','#ed9aaa','#9f1832'][run]:({red:'#fbe4e8',orange:'#fff0d8',yellow:'#fff7cb',green:'#e1f1e7'})[c];
  const ink=run===3?'#ffffff':'#263e43';
+ const suffix=share?cpPigSuffix036(item,share):'';
  const title=`${f.name} · ${cpBasisLabel035()} · ${CP_MONTHS028[m-1]} ${CP028.year+543} · ${CP_COLOR_NAMES031[c]} · ตาย-คัดทิ้ง ${cpN028(item.values.deadcull)} · ยา-วัคซีน ${cpN028(item.values.medvac)} ${Cost028.groups[CP028.group].unit}${c==='red'?' · แดงต่อเนื่อง '+item.redRun+' เดือน':''}`;
- return `<button class="cp-month-farm034" data-cp-farm="${cpEsc028(f.id)}" data-month034="${m}" data-color034="${c}" data-run034="${run}" style="background:${shade};color:${ink};border-left:3px solid ${CP_COLORS028[c]}" title="${cpEsc028(title)}"><span>${cpEsc028(f.name)}</span>${streak&&c==='red'?`<small>${item.redRun>=3?'3+':item.redRun} เดือน</small>`:''}</button>`;
+ return `<button class="cp-month-farm034" data-cp-farm="${cpEsc028(f.id)}" data-month034="${m}" data-color034="${c}" data-run034="${run}" style="background:${shade};color:${ink};border-left:3px solid ${CP_COLORS028[c]}" title="${cpEsc028(title)}"><span>${cpEsc028(f.name)}${suffix}</span>${streak&&c==='red'?`<small>${item.redRun>=3?'3+':item.redRun} เดือน</small>`:''}</button>`;
 }
 function cpStack034(model){
  const colors=cpMonthColors034('stack'),months=model.months.slice(CP028.from-1,CP028.to);
@@ -26,9 +28,23 @@ function cpStack034(model){
  months.forEach((m,i)=>{let bottom=T+H;colors.forEach(c=>{const n=m.groups[c].length;if(!n)return;const hh=n/max*H;svg+=`<rect data-stack-month034="${m.month}" data-stack-color034="${c}" data-stack-count034="${n}" x="${i*step+step*.22}" y="${bottom-hh}" width="${step*.56}" height="${hh}" fill="${CP_COLORS028[c]}"><title>${CP_MONTHS028[m.month-1]} · ${CP_COLOR_NAMES031[c]} ${n} ฟาร์ม</title></rect>`;if(hh>=18)svg+=cpText028(i*step+step/2,bottom-hh/2+4,n,12,c==='yellow'||c==='orange'?'#20383d':'#fff','middle','font-weight="700"');bottom-=hh;});if(counts[i])svg+=cpText028(i*step+step/2,bottom-9,counts[i],14,'#20383d','middle','font-weight="700"');});
  svg+=`<path d="M0 ${T+H}H${w}" stroke="#c7d4d4"/>`;
  let axis='';for(let i=0;i<=4;i++)axis+=cpText028(75,T+H-i*H/4+4,i*axisStep,12,'#5a7274','end');
- const body=`<div class="cp-tablewrap"><table class="cp-stack-table034" style="--month-count:${months.length}">${cpMonthColgroup034(months.length)}<thead><tr><th>เดือน</th>${months.map(m=>`<th>${CP_MONTHS028[m.month-1]}</th>`).join('')}</tr><tr class="cp-month-count034"><th>จำนวนฟาร์ม</th>${months.map((m,i)=>`<th data-month-total034="${m.month}">${m.total?counts[i]:''}</th>`).join('')}</tr></thead><tbody><tr class="cp-stack-chart034"><td>${cpSvg028(90,height,axis).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="แกนจำนวนฟาร์ม"')}</td><td colspan="${months.length}">${cpSvg028(w,height,svg).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="กราฟแท่งซ้อนจำนวนฟาร์มรายเดือน"')}</td></tr>${colors.map(c=>`<tr data-stack-row034="${c}"><th style="color:${c==='yellow'?'#74600a':CP_COLORS028[c]}">${CP_COLOR_NAMES031[c]}</th>${months.map((m,i)=>`<td data-stack-list-month034="${m.month}" data-stack-list-color034="${c}">${m.groups[c].length?`<div class="cp-month-subtotal034">${m.groups[c].length} ฟาร์ม · ${cpN028(m.groups[c].length/counts[i]*100,1)}%</div>`+m.groups[c].map(f=>cpMonthFarm034(f,m.month)).join(''):''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+ const body=`<div class="cp-tablewrap"><table class="cp-stack-table034" style="--month-count:${months.length}">${cpMonthColgroup034(months.length)}<thead><tr><th>เดือน</th>${months.map(m=>`<th>${CP_MONTHS028[m.month-1]}</th>`).join('')}</tr><tr class="cp-month-count034"><th>จำนวนฟาร์ม</th>${months.map((m,i)=>`<th data-month-total034="${m.month}">${m.total?counts[i]:''}</th>`).join('')}</tr></thead><tbody><tr class="cp-stack-chart034"><td>${cpSvg028(90,height,axis).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="แกนจำนวนฟาร์ม"')}</td><td colspan="${months.length}">${cpSvg028(w,height,svg).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="กราฟแท่งซ้อนจำนวนฟาร์มรายเดือน"')}</td></tr>${colors.map(c=>`<tr data-stack-row034="${c}"><th style="color:${c==='yellow'?'#74600a':CP_COLORS028[c]}">${CP_COLOR_NAMES031[c]}</th>${months.map((m,i)=>`<td data-stack-list-month034="${m.month}" data-stack-list-color034="${c}">${m.groups[c].length?`<div class="cp-month-subtotal034">${m.groups[c].length} ฟาร์ม · ${cpN028(m.groups[c].length/counts[i]*100,1)}%</div>`+m.groups[c].map(f=>cpMonthFarm034(f,m.month,false,{mode:CP028.pigShare036,totals:m.headTotals})).join(''):''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
  const unknown=months.filter(m=>m.groups.unknown.length);
- return cpMonthScope034(colors)+cpMonthLegend034(colors)+body+`<p class="cp-muted cp-month-foot034">สัดส่วน (%) คิดจากฟาร์มในสีที่เลือกของแต่ละเดือน · ฟาร์มเดียวถูกนับครั้งเดียวต่อเดือน${unknown.length?' · ยังจัดกลุ่มไม่ได้ (ไม่รวมในแท่ง): '+unknown.map(m=>CP_MONTHS028[m.month-1]+' '+m.groups.unknown.length+' ฟาร์ม').join(', '):''}</p>`;
+ return cpMonthScope034(colors)+cpPigContext036()+cpMonthLegend034(colors)+body+`<p class="cp-muted cp-month-foot034">เปอร์เซ็นต์ใต้ชื่อสีคิดจากจำนวนฟาร์มในสีที่เลือกของแต่ละเดือน · ฟาร์มเดียวถูกนับครั้งเดียวต่อเดือน${unknown.length?' · ยังจัดกลุ่มไม่ได้ (ไม่รวมในแท่ง): '+unknown.map(m=>CP_MONTHS028[m.month-1]+' '+m.groups.unknown.length+' ฟาร์ม').join(', '):''}</p>`;
+}
+function cpPigTools036(){return `<label class="cp-pig-select036">สัดส่วนสุกร<select data-cp="pigShare036" aria-label="ฐานสัดส่วนจำนวนสุกร">${cpOptions028([['off','ไม่แสดง'],['all','เทียบทุกฟาร์ม'],['color','เทียบภายในสี']],CP028.pigShare036||'off')}</select></label>`;}
+function cpPigSuffix036(item,share){
+ if(!['all','color'].includes(share.mode))return '';
+ const total=share.mode==='all'?share.totals.all:share.totals.colors[item.category];
+ const pct=CostMonthly034.headShare(item.head,total),known=item.head!==null;
+ const text=known?`${cpN028(item.head,Number.isInteger(item.head)?0:2)} ตัว · ${pct===null?'คำนวณสัดส่วนไม่ได้':cpN028(pct,1)+'%'}`:'ไม่มีข้อมูลจำนวนสุกร';
+ const basis=share.mode==='all'?'ทุกฟาร์มตามตัวกรอง (รวมฟาร์มที่ยังจัดสีไม่ได้)':'ฟาร์มในสีเดียวกัน';
+ const title=`จำนวนสุกรจากข้อมูลต้นทุน · ฐาน: ${basis}${total===null?' · ข้อมูลจำนวนสุกรไม่ครบ':` · รวม ${cpN028(total,Number.isInteger(total)?0:2)} ตัว`}`;
+ return ` <span class="cp-pig-share036" title="${cpEsc028(title)}">(${cpEsc028(text)})</span>`;
+}
+function cpPigContext036(){
+ const mode=CP028.pigShare036;if(!['all','color'].includes(mode))return '';
+ return `<p class="cp-month-context034 cp-pig-context036">วงเล็บหลังชื่อฟาร์ม: จำนวนสุกร (ตัว) · % ${mode==='all'?'เทียบทุกฟาร์มตามตัวกรอง รวมฟาร์มที่ยังจัดสีไม่ได้':'เทียบฟาร์มในสีเดียวกัน'} · ${cpIsCumulative035()?'จำนวนสะสม ม.ค. ถึงแต่ละเดือน':'จำนวนรายเดือน'}<br>ใช้จำนวนหมูดีจากข้อมูลต้นทุน · ซ่อนสีไม่เปลี่ยนฐานคำนวณ · ข้อมูลจำนวนสุกรไม่ครบหรือยอดรวมเป็นศูนย์จะไม่แสดงเปอร์เซ็นต์</p>`;
 }
 function cpRegionMonths034(model){
  const colors=cpMonthColors034('region');if(!colors.length)return cpMonthScope034(colors,true)+'<p role="status">เลือกอย่างน้อยหนึ่งสีเพื่อแสดงตาราง</p>';
