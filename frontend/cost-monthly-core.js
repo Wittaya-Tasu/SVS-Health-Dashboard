@@ -17,6 +17,24 @@
   }
   return max;
  }
+ // Dense ranks on raw percentages: ties share rank; the next distinct value is second.
+ function rankHeadShares(month,shownColors,mode){
+  const ranks=Object.create(null);if(!['all','color'].includes(mode))return ranks;
+  const entries=[];
+  for(const color of shownColors)for(const f of month.groups[color]||[]){
+   const total=mode==='all'?month.headTotals.all:month.headTotals.colors[color];
+   const pct=headShare(f.months[month.month-1].head,total);
+   if(pct!==null)entries.push({id:f.id,pct});
+  }
+  entries.sort((a,b)=>b.pct-a.pct);
+  let rank=0,previous=null;
+  for(const entry of entries){
+   if(previous===null||Math.abs(entry.pct-previous)>=1e-9){rank++;previous=entry.pct;}
+   if(rank>2)break;
+   ranks[entry.id]=rank;
+  }
+  return ranks;
+ }
  function build(data,scope,engine){
   const year=Number(scope.year),group=scope.group;
   const farms=new Map(data.farms.filter(f=>
@@ -57,6 +75,6 @@
   });
   return {year,group,byFarm,months};
  }
- root.CostMonthly034={build,colors,sumHeads,headShare,maxHeadShare};
+ root.CostMonthly034={build,colors,sumHeads,headShare,maxHeadShare,rankHeadShares};
  if(typeof module!=='undefined')module.exports=root.CostMonthly034;
 })(typeof globalThis!=='undefined'?globalThis:this);

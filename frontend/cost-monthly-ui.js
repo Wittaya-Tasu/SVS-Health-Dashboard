@@ -14,10 +14,10 @@ function cpMonthLegend034(colors){return `<div class="cp-legend">${colors.map(c=
 function cpMonthColgroup034(n){return `<colgroup><col style="width:7%">${Array.from({length:n},()=>`<col style="width:${93/n}%">`).join('')}</colgroup>`;}
 function cpMonthFarm034(f,m,streak=false,share=null){const item=f.months[m-1],c=item.category,run=streak&&c==='red'?Math.min(3,item.redRun):0;
  const shade=run?['','#fbe4e8','#ed9aaa','#9f1832'][run]:({red:'#fbe4e8',orange:'#fff0d8',yellow:'#fff7cb',green:'#e1f1e7'})[c];
- const ink=run===3?'#ffffff':'#263e43';
+ const rank=share?.rank||0,ink=rank?'#a81e30':run===3?'#ffffff':'#263e43';
  const suffix=share?cpPigSuffix036(item,share):'';
  const title=`${f.name} · ${cpBasisLabel035()} · ${CP_MONTHS028[m-1]} ${CP028.year+543} · ${CP_COLOR_NAMES031[c]} · ตาย-คัดทิ้ง ${cpN028(item.values.deadcull)} · ยา-วัคซีน ${cpN028(item.values.medvac)} ${Cost028.groups[CP028.group].unit}${c==='red'?' · แดงต่อเนื่อง '+item.redRun+' เดือน':''}`;
- return `<button class="cp-month-farm034" data-cp-farm="${cpEsc028(f.id)}" data-month034="${m}" data-color034="${c}" data-run034="${run}" style="background:${shade};color:${ink};border-left:3px solid ${CP_COLORS028[c]}" title="${cpEsc028(title)}"><span>${cpEsc028(f.name)}</span>${suffix}${streak&&c==='red'?`<small>${item.redRun>=3?'3+':item.redRun} เดือน</small>`:''}</button>`;
+ return `<button class="cp-month-farm034${rank?' cp-pig-ranked038':''}" data-pig-rank038="${rank}" data-cp-farm="${cpEsc028(f.id)}" data-month034="${m}" data-color034="${c}" data-run034="${run}" style="background:${shade};color:${ink}${rank?';font-weight:'+(rank===1?'700':'400'):''};border-left:3px solid ${CP_COLORS028[c]}" title="${cpEsc028(title)}"><span>${cpEsc028(f.name)}</span>${suffix}${streak&&c==='red'?`<small>${item.redRun>=3?'3+':item.redRun} เดือน</small>`:''}</button>`;
 }
 function cpStack034(model){
  const colors=cpMonthColors034('stack'),months=model.months.slice(CP028.from-1,CP028.to);
@@ -28,8 +28,8 @@ function cpStack034(model){
  months.forEach((m,i)=>{let bottom=T+H;colors.forEach(c=>{const n=m.groups[c].length;if(!n)return;const hh=n/max*H;svg+=`<rect data-stack-month034="${m.month}" data-stack-color034="${c}" data-stack-count034="${n}" x="${i*step+step*.22}" y="${bottom-hh}" width="${step*.56}" height="${hh}" fill="${CP_COLORS028[c]}"><title>${CP_MONTHS028[m.month-1]} · ${CP_COLOR_NAMES031[c]} ${n} ฟาร์ม</title></rect>`;if(hh>=18)svg+=cpText028(i*step+step/2,bottom-hh/2+4,n,12,c==='yellow'||c==='orange'?'#20383d':'#fff','middle','font-weight="700"');bottom-=hh;});if(counts[i])svg+=cpText028(i*step+step/2,bottom-9,counts[i],14,'#20383d','middle','font-weight="700"');});
  svg+=`<path d="M0 ${T+H}H${w}" stroke="#c7d4d4"/>`;
  let axis='';for(let i=0;i<=4;i++)axis+=cpText028(75,T+H-i*H/4+4,i*axisStep,12,'#5a7274','end');
- const maxShares=months.map(m=>CostMonthly034.maxHeadShare(m,colors,CP028.pigShare036));
- const body=`<div class="cp-tablewrap"><table class="cp-stack-table034" style="--month-count:${months.length}">${cpMonthColgroup034(months.length)}<thead><tr><th>เดือน</th>${months.map(m=>`<th>${CP_MONTHS028[m.month-1]}</th>`).join('')}</tr><tr class="cp-month-count034"><th>จำนวนฟาร์ม</th>${months.map((m,i)=>`<th data-month-total034="${m.month}">${m.total?counts[i]:''}</th>`).join('')}</tr></thead><tbody><tr class="cp-stack-chart034"><td>${cpSvg028(90,height,axis).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="แกนจำนวนฟาร์ม"')}</td><td colspan="${months.length}">${cpSvg028(w,height,svg).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="กราฟแท่งซ้อนจำนวนฟาร์มรายเดือน"')}</td></tr>${colors.map(c=>`<tr data-stack-row034="${c}"><th style="color:${c==='yellow'?'#74600a':CP_COLORS028[c]}">${CP_COLOR_NAMES031[c]}</th>${months.map((m,i)=>`<td data-stack-list-month034="${m.month}" data-stack-list-color034="${c}">${m.groups[c].length?`<div class="cp-month-subtotal034">${m.groups[c].length} ฟาร์ม · ${cpN028(m.groups[c].length/counts[i]*100,1)}%</div>`+m.groups[c].map(f=>cpMonthFarm034(f,m.month,false,{mode:CP028.pigShare036,totals:m.headTotals,max:maxShares[i]})).join(''):''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+ const ranks=months.map(m=>CostMonthly034.rankHeadShares(m,colors,CP028.pigShare036));
+ const body=`<div class="cp-tablewrap"><table class="cp-stack-table034" style="--month-count:${months.length}">${cpMonthColgroup034(months.length)}<thead><tr><th>เดือน</th>${months.map(m=>`<th>${CP_MONTHS028[m.month-1]}</th>`).join('')}</tr><tr class="cp-month-count034"><th>จำนวนฟาร์ม</th>${months.map((m,i)=>`<th data-month-total034="${m.month}">${m.total?counts[i]:''}</th>`).join('')}</tr></thead><tbody><tr class="cp-stack-chart034"><td>${cpSvg028(90,height,axis).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="แกนจำนวนฟาร์ม"')}</td><td colspan="${months.length}">${cpSvg028(w,height,svg).replace('role="img"','preserveAspectRatio="none" role="img" aria-label="กราฟแท่งซ้อนจำนวนฟาร์มรายเดือน"')}</td></tr>${colors.map(c=>`<tr data-stack-row034="${c}"><th style="color:${c==='yellow'?'#74600a':CP_COLORS028[c]}">${CP_COLOR_NAMES031[c]}</th>${months.map((m,i)=>`<td data-stack-list-month034="${m.month}" data-stack-list-color034="${c}">${m.groups[c].length?`<div class="cp-month-subtotal034">${m.groups[c].length} ฟาร์ม · ${cpN028(m.groups[c].length/counts[i]*100,1)}%</div>`+m.groups[c].map(f=>cpMonthFarm034(f,m.month,false,{mode:CP028.pigShare036,totals:m.headTotals,rank:ranks[i][f.id]||0})).join(''):''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
  const unknown=months.filter(m=>m.groups.unknown.length);
  return cpMonthScope034(colors)+cpPigContext036()+cpMonthLegend034(colors)+body+`<p class="cp-muted cp-month-foot034">เปอร์เซ็นต์ใต้ชื่อสีคิดจากจำนวนฟาร์มในสีที่เลือกของแต่ละเดือน · ฟาร์มเดียวถูกนับครั้งเดียวต่อเดือน${unknown.length?' · ยังจัดกลุ่มไม่ได้ (ไม่รวมในแท่ง): '+unknown.map(m=>CP_MONTHS028[m.month-1]+' '+m.groups.unknown.length+' ฟาร์ม').join(', '):''}</p>`;
 }
@@ -38,7 +38,7 @@ function cpPigSuffix036(item,share){
  if(!['all','color'].includes(share.mode))return '';
  const total=share.mode==='all'?share.totals.all:share.totals.colors[item.category];
  const pct=CostMonthly034.headShare(item.head,total),known=item.head!==null;
- const isMax=pct!==null&&share.max!==null&&Math.abs(pct-share.max)<1e-9;
+ const isMax=share.rank===1;
  const percent=pct===null?'คำนวณสัดส่วนไม่ได้':`<span class="cp-pig-percent037${isMax?' cp-pig-max037':''}"${isMax?' title="สัดส่วนสูงสุดของฟาร์มที่แสดงในเดือนนี้"':''}>${cpN028(pct,0)}%</span>`;
  const text=known?`${cpN028(item.head,Number.isInteger(item.head)?0:2)} ตัว · ${percent}`:'ไม่มีข้อมูลจำนวนสุกร';
  const basis=share.mode==='all'?'ทุกฟาร์มตามตัวกรอง (รวมฟาร์มที่ยังจัดสีไม่ได้)':'ฟาร์มในสีเดียวกัน';
@@ -47,7 +47,7 @@ function cpPigSuffix036(item,share){
 }
 function cpPigContext036(){
  const mode=CP028.pigShare036;if(!['all','color'].includes(mode))return '';
- return `<p class="cp-month-context034 cp-pig-context036">ใต้ชื่อฟาร์ม: จำนวนสุกร (ตัว) · % ${mode==='all'?'เทียบทุกฟาร์มตามตัวกรอง รวมฟาร์มที่ยังจัดสีไม่ได้':'เทียบฟาร์มในสีเดียวกัน'} · ${cpIsCumulative035()?'จำนวนสะสม ม.ค. ถึงแต่ละเดือน':'จำนวนรายเดือน'}<br>ใช้จำนวนหมูดีจากข้อมูลต้นทุน · ซ่อนสีไม่เปลี่ยนฐานคำนวณ · % ตัวหนาสีแดง = สูงสุดในคอลัมน์ที่แสดง</p>`;
+ return `<p class="cp-month-context034 cp-pig-context036">ใต้ชื่อฟาร์ม: จำนวนสุกร (ตัว) · % ${mode==='all'?'เทียบทุกฟาร์มตามตัวกรอง รวมฟาร์มที่ยังจัดสีไม่ได้':'เทียบฟาร์มในสีเดียวกัน'} · ${cpIsCumulative035()?'จำนวนสะสม ม.ค. ถึงแต่ละเดือน':'จำนวนรายเดือน'}<br>ใช้จำนวนหมูดีจากข้อมูลต้นทุน · ซ่อนสีไม่เปลี่ยนฐานคำนวณ · สีแดงตัวหนา = อันดับ 1 · สีแดงตัวปกติ = อันดับ 2 ในคอลัมน์ที่แสดง</p>`;
 }
 function cpRegionMonths034(model){
  const colors=cpMonthColors034('region');if(!colors.length)return cpMonthScope034(colors,true)+'<p role="status">เลือกอย่างน้อยหนึ่งสีเพื่อแสดงตาราง</p>';

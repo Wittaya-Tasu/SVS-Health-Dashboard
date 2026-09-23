@@ -27,3 +27,6 @@
 .cp-pig-select036 select{min-width:165px}.cp-pig-share036{display:block;font-weight:400;font-size:calc(1em - 1px);white-space:normal;line-height:1.5;margin-top:2px}
 .cp-pig-share036 .cp-pig-percent037{font-size:inherit;font-weight:400}.cp-pig-share036 .cp-pig-max037{font-weight:700;color:#a81e30}
 @media(max-width:600px){.cp-tools .cp-color-picks034 .cp-pig-select036{margin-left:0;flex-wrap:wrap}}
+
+/* SVS038: style the full label; retain the smaller second line. */
+.cp-month-farm034.cp-pig-ranked038 .cp-pig-share036,.cp-month-farm034.cp-pig-ranked038 .cp-pig-percent037{font-weight:inherit;color:inherit}
