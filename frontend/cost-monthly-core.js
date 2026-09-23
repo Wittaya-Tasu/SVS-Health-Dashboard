@@ -7,6 +7,16 @@
  function sumHeads(values){return values.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0)?null:values.reduce((a,b)=>a+b,0);}
  function headShare(head,total){return typeof head==='number'&&Number.isFinite(head)&&head>=0&&typeof total==='number'&&Number.isFinite(total)&&total>0?head/total*100:null;}
 
+ // Compare unrounded percentages across the farms visible in a month column.
+ function maxHeadShare(month,shownColors,mode){
+  if(!['all','color'].includes(mode))return null;
+  let max=null;
+  for(const color of shownColors)for(const f of month.groups[color]||[]){
+   const item=f.months[month.month-1],total=mode==='all'?month.headTotals.all:month.headTotals.colors[color];
+   const pct=headShare(item.head,total);if(pct!==null&&(max===null||pct>max))max=pct;
+  }
+  return max;
+ }
  function build(data,scope,engine){
   const year=Number(scope.year),group=scope.group;
   const farms=new Map(data.farms.filter(f=>
@@ -47,6 +57,6 @@
   });
   return {year,group,byFarm,months};
  }
- root.CostMonthly034={build,colors,sumHeads,headShare};
+ root.CostMonthly034={build,colors,sumHeads,headShare,maxHeadShare};
  if(typeof module!=='undefined')module.exports=root.CostMonthly034;
 })(typeof globalThis!=='undefined'?globalThis:this);
