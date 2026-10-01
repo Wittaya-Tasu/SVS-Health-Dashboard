@@ -49,3 +49,10 @@
  .ds-export040 .ds-region-svg041 text,.ds-export040 .ds-month-svg041 text{font-size:16px!important}
  .ds-export040 .panel{-webkit-box-decoration-break:clone;box-decoration-break:clone}
 }
+/* SVS042: real case counts, smaller CE year labels, optional all-year line overlay. */
+.ds-month-controls042{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.ds-month-controls042 .ds-year-picker041{margin-bottom:0}
+.ds-line-toggle042{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.ds-line-toggle042 input{width:auto;margin:0}
+.ds-line-swatch042{display:inline-block;width:22px;height:0;border-top-width:2px;border-top-style:solid;flex:none}
+@media print{.ds-export040 .ds-region-svg041 text.ds-year-ce042{font-size:15px!important}}
