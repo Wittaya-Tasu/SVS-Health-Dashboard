@@ -20,3 +20,32 @@
 @media(max-width:650px){.ds-grid040{grid-template-columns:minmax(0,1fr)}.ds-risks040,.ds-causes040{grid-column:auto}.ds-head040{align-items:flex-start;flex-direction:column}.ds040 .panel{padding:14px}.ds-bar040{grid-template-columns:minmax(80px,1fr) 1fr 62px}.ds-number040{font-size:40px}}
 .ds-export040{box-sizing:border-box;color:#203d45;font-family:'Noto Sans Thai',Tahoma,sans-serif}.ds-export040 h1{font-size:25px;margin:0 0 14px}.ds-export040 .ds-grid040{grid-template-columns:1fr 1fr 1.2fr;gap:14px}.ds-export040 .ds-risks040{grid-column:auto}.ds-export040 .ds040 .panel{padding:16px}.ds-export040 .ds-month-wrap040,.ds-export040 .ds-tablewrap040{overflow:visible}.ds-export040 .ds-month040{min-width:0}.ds-export040 .da-only-screen021{display:none!important}.ds-export040 .ds-ring040{width:150px;height:150px}.ds-export040 .ds-legend040{min-width:150px}.ds-export040 .ds-animals040 td:last-child{font-size:18px}
 @media print{.ds-export040{margin:0!important;padding:0!important}.ds-export040 *{-webkit-print-color-adjust:exact;print-color-adjust:exact}.ds-export040 .panel{break-inside:avoid}.ds-export040 .ds-grid040{gap:3mm}.ds-export040 .ds040 .panel{padding:3mm}.ds-export040 h1{font-size:17pt}.ds-export040 .ds-head040 h2{font-size:17pt}.ds-export040 .panel h3{font-size:11pt;padding-right:0}.ds-export040 .ds-note040,.ds-export040 .ds-foot040{font-size:8pt}.ds-export040 .ds-animals040{font-size:9pt}.ds-export040 .ds-animals040 td:last-child{font-size:13pt}.ds-export040 .ds-ring040{width:32mm;height:32mm}.ds-export040 .ds-number040{font-size:32pt}.ds-export040 .ds-legend040{font-size:8pt;min-width:32mm}.ds-export040 .ds-matrix040{font-size:8pt}.ds-export040 .ds-bar040{font-size:8pt;gap:2mm}.ds-export040 .ds-bar040>b{font-size:8pt}.ds-export040 .ds-region-stack040{min-height:10mm}.ds-export040 .ds-bars040{gap:2mm}.ds-export040 .export-attribution016{font-size:8pt;color:#888;margin-top:4mm;border-top:1px solid #dce7e7;padding-top:2mm}.ds-print-toolbar040{display:none!important}}
+/* SVS041: one chart per comparison, year controls and source grouping audit. */
+.ds-grid040{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ds-matrix-panel040{grid-column:span 2}
+.ds-regions040,.ds-monthly-panel041,.ds-causes040{grid-column:1/-1}
+.ds-chart-scroll041{overflow-x:auto;max-width:100%}
+.ds-chart-scroll041 svg{display:block;width:100%;height:auto;min-width:700px}
+.ds-inline-legend041{display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:10px;font-size:12px}
+.ds-year-picker041{display:inline-block;position:relative;border:1px solid #d8e5e4;border-radius:8px;font-size:13px;background:#fff;margin-bottom:8px}
+.ds-year-picker041 summary{cursor:pointer;padding:9px 12px}
+.ds-year-menu041{position:absolute;top:100%;left:0;z-index:15;background:white;border:1px solid #d8e5e4;border-radius:8px;box-shadow:0 5px 18px #123d431a;padding:12px;min-width:230px;max-height:320px;overflow:auto}
+.ds-year-menu041 label{display:flex;align-items:center;gap:8px;margin:6px 0}
+.ds-year-menu041>div{display:flex;gap:8px;margin-top:10px}
+.ds-audit-button041{font-size:12px;margin-top:12px}
+.ds-audit041 td,.ds-audit041 th{white-space:normal;overflow-wrap:anywhere;text-align:left}
+.ds-audit041 td:first-child{min-width:130px;max-width:360px}
+.ds-export040 .ds-chart-scroll041{overflow:visible}
+.ds-export040 .ds-chart-scroll041 svg,.ds-export040 .ds-chart-scroll041 img{width:100%;min-width:0;height:auto}
+.ds-export040 .ds-grid040:has(>.panel:only-child){grid-template-columns:minmax(0,1fr)}
+@media(max-width:1100px){.ds-grid040{grid-template-columns:repeat(2,minmax(0,1fr))}.ds-risks040{grid-column:auto}}
+@media(max-width:650px){.ds-grid040{grid-template-columns:minmax(0,1fr)}.ds-matrix-panel040{grid-column:auto}.ds-year-menu041{max-width:calc(100vw - 70px)}}
+@media print{.ds-export040 .ds-grid040{grid-template-columns:repeat(3,minmax(0,1fr))}.ds-export040 .ds-chart-scroll041{overflow:visible}.ds-export040 .ds-inline-legend041{font-size:8pt;gap:1mm 4mm}}
+@media print{
+ .ds-export040 .ds-chart-scroll041 svg{max-height:60mm;min-width:0;width:100%;height:auto}
+ .ds-export040 .export-attribution016{break-inside:avoid}
+}
+@media print{
+ .ds-export040 .ds-region-svg041 text,.ds-export040 .ds-month-svg041 text{font-size:16px!important}
+ .ds-export040 .panel{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+}
