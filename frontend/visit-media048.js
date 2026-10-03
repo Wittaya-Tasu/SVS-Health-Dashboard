@@ -75,9 +75,9 @@ printRecord013=async function(r){
  const f=state.farms.find(f=>f.id===r.farmId)||historyArchiveFarms018.get(r.farmId);if(!f)return toast('ไม่พบฟาร์มที่มีสิทธิ์เข้าถึง');
  const w=window.open('','_blank');if(!w)return toast('กรุณาอนุญาตหน้าต่างป๊อปอัปเพื่อเปิดรายงาน');
  const auth=token,epoch=MEDIA048.epoch;
- w.document.open();w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>${esc(farmDisplayName(f))} — บันทึกเยี่ยมฟาร์ม</title><style>${REPORT_STYLE015}${VISIT_REPORT_STYLE019}${VISIT_MEDIA_STYLE048}@page{size:A4;margin:16mm}body{font-family:Tahoma,sans-serif;color:#203d45;font-size:12px;line-height:1.7;margin:24px;background:white;overflow-wrap:anywhere}.toolbar{background:#eef5f4;padding:14px;margin-bottom:20px}button{padding:8px 14px}#printGuard048{display:none}@media print{body{margin:0}.toolbar{display:none}body:not(.media-ready048) #reportBody017{display:none}body:not(.media-ready048) #printGuard048{display:block}}</style><link rel="stylesheet" href="./ui-shell.css?v=48"></head><body class="visit-report017"><div class="toolbar"><div class="visit-media-tools048"><button id="print">พิมพ์ / บันทึกเป็น PDF</button><button id="reportPNG017">บันทึกภาพ PNG</button><button id="retryPhotos048" hidden>โหลดรูปที่เหลือต่อ</button></div><p id="status">รูปตัวอย่างกำลังทยอยโหลด · รูปสำหรับรายงานจะเตรียมเมื่อกดส่งออก</p></div><p id="printGuard048">กรุณาใช้ปุ่มส่งออกในรายงาน และรอเตรียมรูปสำหรับรายงานให้ครบก่อนพิมพ์</p><main id="reportBody017">${reportHTML013(r,f)}</main></body></html>`);w.document.close();
+ w.document.open();w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>${esc(farmDisplayName(f))} — บันทึกเยี่ยมฟาร์ม</title><style>${REPORT_STYLE015}${VISIT_REPORT_STYLE019}${VISIT_MEDIA_STYLE048}@page{size:A4;margin:16mm}body{font-family:Tahoma,sans-serif;color:#203d45;font-size:12px;line-height:1.7;margin:24px;background:white;overflow-wrap:anywhere}.toolbar{background:#eef5f4;padding:14px;margin-bottom:20px}button{padding:8px 14px}#printGuard048{display:none}@media print{body{margin:0}.toolbar{display:none}body:not(.media-ready048) #reportBody017{display:none}body:not(.media-ready048) #printGuard048{display:block}}</style><link rel="stylesheet" href="./ui-shell.css?v=49"></head><body class="visit-report017"><div class="toolbar"><div class="visit-media-tools048"><button id="print">พิมพ์ / บันทึกเป็น PDF</button><button id="reportPNG017">บันทึกภาพ PNG</button><button id="retryPhotos048" hidden>โหลดรูปที่เหลือต่อ</button></div><p id="status">รูปตัวอย่างกำลังทยอยโหลด · รูปสำหรับรายงานจะเตรียมเมื่อกดส่งออก</p></div><p id="printGuard048">กรุณาใช้ปุ่มส่งออกในรายงาน และรอเตรียมรูปสำหรับรายงานให้ครบก่อนพิมพ์</p><main id="reportBody017">${reportHTML013(r,f)}</main></body></html>`);w.document.close();
  const tasks=(r.data.issues||[]).flatMap((issue,i)=>(issue.images||[]).map((im,j)=>({im,i,j,ready:false,error:'',previewError:'',element:w.document.querySelector(`[data-report-photo="${i}-${j}"]`)})));
- const context={w,r,auth,epoch,tasks,busy:false,format:'pdf',meta:null};w.visitMedia048=context;
+ const context={w,r,f,auth,epoch,tasks,busy:false,format:'pdf',meta:null};w.visitMedia048=context;
  tasks.forEach(task=>{const placeholder=w.document.createElement('div');placeholder.className='photo-placeholder048';placeholder.textContent='กำลังโหลดรูปตัวอย่าง…';task.element.appendChild(placeholder);});
  w.document.getElementById('print').onclick=()=>mediaExport048(context,'pdf');w.document.getElementById('reportPNG017').onclick=()=>mediaExport048(context,'png');w.document.getElementById('retryPhotos048').onclick=()=>mediaExport048(context,context.format);
  // Open/read does not record an export or acquire the export writer lock.
@@ -101,12 +101,27 @@ async function mediaPrepare048(c){
  }));await Promise.all(jobs);mediaReportLive048(c);
  const missing=c.tasks.filter(t=>!t.ready);if(missing.length)throw Error(`ยังเตรียมรูปไม่ครบ ${missing.length} รูป · กดโหลดรูปที่เหลือต่อ (${missing[0].error})`);
 }
+// One filename rule for visit PNG downloads and the PDF document title.
+function visitFilenamePart049(value,fallback){
+ return String(value??'').normalize('NFC').replace(/[<>:"/\\|?*\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g,'_').replace(/\s+/g,' ').trim().replace(/[. ]+$/g,'')||fallback;
+}
+function visitFilename049(record,farm,meta){
+ const data=record.data||{},names=[Array.from(visitFilenamePart049(farm?.name,'ไม่ระบุฟาร์ม')),Array.from(visitFilenamePart049(data.vet,'ไม่ระบุสัตวแพทย์'))];
+ const date=visitFilenamePart049(data.date,'ไม่ระบุวันที่'),id=visitFilenamePart049(meta.id,'ไม่ระบุID'),shortened=[false,false],encoder=new TextEncoder();
+ const label=i=>names[i].join('')+(shortened[i]?'…':''),build=()=>[label(0),date,label(1),id].join('_');
+ // Keep the date and full export ID; shorten very long names only to fit a common filename byte limit.
+ while(encoder.encode(build()+'.png').length>240){
+  const candidates=[0,1].filter(i=>names[i].length>1);if(!candidates.length)throw Error('ชื่อไฟล์ยาวเกินกำหนด กรุณาตรวจวันที่และ Export ID');
+  const i=candidates.sort((a,b)=>encoder.encode(label(b)).length-encoder.encode(label(a)).length)[0];names[i].pop();shortened[i]=true;
+ }
+ return build();
+}
 async function mediaExport048(c,format){
  if(c.busy)return;c.busy=true;c.format=format;const d=c.w.document,buttons=['print','reportPNG017','retryPhotos048'].map(id=>d.getElementById(id));buttons.forEach(b=>b.disabled=true);d.getElementById('retryPhotos048').hidden=true;
  try{
   mediaReportLive048(c);await mediaPrepare048(c);await d.fonts.load("16px 'TH Sarabun New'");await d.fonts.ready;mediaReportLive048(c);
   const meta=await exportIdentity016('visit',format,{farmId:c.r.farmId,recordId:c.r.id||'',filters:{...exportFilters016(),imageVariant:'report',imageMaxEdge:1600,imageProtocol:48}});mediaReportLive048(c);
-  d.querySelector('.export-attribution016')?.remove();d.getElementById('reportBody017').insertAdjacentHTML('beforeend',attributionHTML016(meta));d.title='Visit_Report_'+meta.id;c.meta=meta;d.body.classList.add('media-ready048');d.body.dataset.exportReady='true';d.getElementById('status').textContent=`พร้อมส่งออก · รูปครบ ${c.tasks.length}/${c.tasks.length}`;
+  d.querySelector('.export-attribution016')?.remove();d.getElementById('reportBody017').insertAdjacentHTML('beforeend',attributionHTML016(meta));c.exportBasename=visitFilename049(c.r,c.f,meta);d.title=c.exportBasename;c.meta=meta;d.body.classList.add('media-ready048');d.body.dataset.exportReady='true';d.getElementById('status').textContent=`พร้อมส่งออก · รูปครบ ${c.tasks.length}/${c.tasks.length}`;
   if(format==='pdf')c.w.print();else await mediaPNG048(c,meta);
  }catch(e){if(!c.w.closed){d.getElementById('status').textContent=e.message;d.getElementById('retryPhotos048').hidden=false;}}
  finally{c.busy=false;if(!c.w.closed)buttons.forEach(b=>b.disabled=false);}
@@ -114,6 +129,6 @@ async function mediaExport048(c,format){
 async function mediaPNG048(c,meta){
  const root=c.w.document.getElementById('reportBody017'),rect=root.getBoundingClientRect(),width=Math.ceil(rect.width+32),height=Math.ceil(rect.height+32),scale=Math.min(2,16000/width,16000/height,Math.sqrt(40000000/(width*height)));if(scale<.6)throw Error('รายงานยาวเกินไปสำหรับภาพเดียว กรุณาบันทึก PDF');
  // Canvas must belong to the report document, whose embedded Thai font is loaded.
- const canvas=c.w.document.createElement('canvas');canvas.width=Math.ceil(width*scale);canvas.height=Math.ceil(height*scale);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);paintOverviewBoard(ctx,root,16,16);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('สร้างภาพไม่สำเร็จ');const url=URL.createObjectURL(blob),a=c.w.document.createElement('a');a.href=url;a.download='Visit_Report_'+meta.id+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+ const canvas=c.w.document.createElement('canvas');canvas.width=Math.ceil(width*scale);canvas.height=Math.ceil(height*scale);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);paintOverviewBoard(ctx,root,16,16);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('สร้างภาพไม่สำเร็จ');const url=URL.createObjectURL(blob),a=c.w.document.createElement('a');a.href=url;a.download=(c.exportBasename||visitFilename049(c.r,c.f,meta))+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 start();
