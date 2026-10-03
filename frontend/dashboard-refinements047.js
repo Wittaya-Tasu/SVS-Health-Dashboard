@@ -44,4 +44,4 @@ const refExportSnapshotBase047=daSnapshot021;daSnapshot021=function(){const html
 const refExportFiltersBase047=daExportFilters021;daExportFilters021=function(){return {...refExportFiltersBase047(),matrixFarmTypes:REF047.matrixTypes===null?'all':REF047.matrixTypes.slice(),riskSummaryDisplay:REF047.riskMode,controlDenominator:'method-case-pairs-plus-unspecified-cases',controlCatalogVersion:47};};
 const refNavSnapshotBase047=uiSnapshot032;uiSnapshot032=function(){return {...refNavSnapshotBase047(),ref047:JSON.parse(JSON.stringify(REF047))};};
 const refNavRestoreBase047=uiRestore032;uiRestore032=function(s){if(s.ref047)Object.assign(REF047,JSON.parse(JSON.stringify(s.ref047)));else refReset047();return refNavRestoreBase047(s);};
-start();
+// Startup follows visit media refinements048.
