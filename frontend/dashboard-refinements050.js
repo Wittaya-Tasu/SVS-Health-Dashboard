@@ -51,4 +51,4 @@ const refSnapshotBase050=daSnapshot021;daSnapshot021=function(){return '<style>'
 const refNavBase050=uiSnapshot032;uiSnapshot032=function(){return {...refNavBase050(),ref050:JSON.parse(JSON.stringify(REF050))};};
 const refRestoreBase050=uiRestore032;uiRestore032=function(s){if(s.ref050)Object.assign(REF050,JSON.parse(JSON.stringify(s.ref050)));else refReset050();return refRestoreBase050(s);};
 function lossAssessmentMatches050(event,assessment){const c=event.lossClassification050;return String(assessment.sourceRevision)===String(event.revision)||!!c&&String(event.revision)===String(c.appliedRevision)&&String(assessment.sourceRevision)===String(c.sourceRevision);}
-start();
+// Startup follows the visit report layout in SVS051.
