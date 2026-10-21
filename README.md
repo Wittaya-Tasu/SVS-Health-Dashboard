@@ -1,5 +1,7 @@
 # SVS Health Dashboard
 
+SVS056 / frontend v0.1.56 เพิ่ม Knowledge Sharing และรายละเอียดสมาชิก ดู [การเชื่อมต่อและโครงสร้างข้อมูล](KNOWLEDGE_SHARING.md) Backend เชื่อมกับ source Apps Script ปัจจุบันโดยเก็บข้อมูลแยกจากงานฟาร์ม
+
 Repository สำหรับหน้าเว็บบน GitHub Pages และ Backend บน Google Apps Script ใช้ Google Sheets เก็บข้อมูลและ Google Drive เก็บไฟล์ ชื่อระบบล่าสุดตามผู้ใช้คือ **SVS Health Dashboard** โดยนำข้อกำหนด Smart SVS v1.6 มาใช้ต่อ
 
 ไม่มีข้อมูลฟาร์ม ผลตรวจ หรือผู้ใช้จำลอง ไม่มีรายชื่อบุคคล อีเมลจริง หรือ Secret ใน Repository ระบบจะแสดงหน้า Login และสถานะไม่มีข้อมูลจนตั้งค่า Backend และเพิ่มข้อมูลจริง

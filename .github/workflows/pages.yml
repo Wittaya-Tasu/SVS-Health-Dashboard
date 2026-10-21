@@ -28,7 +28,8 @@ jobs:
           node-version: '22'
 
       - run: node --check frontend/app.js
-      - run: node --test tests/backend.test.cjs
+      - run: node --check frontend/knowledge-sharing-core.js && node --check frontend/knowledge-sharing-ui.js && node --check frontend/knowledge-sharing-import.js && node --check frontend/knowledge-sharing-bridge.js
+      - run: node --test tests/backend.test.cjs tests/knowledge-sharing.test.cjs
 
       - uses: actions/configure-pages@v5
 
