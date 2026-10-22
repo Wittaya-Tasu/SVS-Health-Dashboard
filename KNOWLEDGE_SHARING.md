@@ -1,4 +1,10 @@
-# SVS058 Knowledge Sharing
+# SVS059 Knowledge Sharing
+
+## Topic dropdown and aligned regional farm board (v0.1.59)
+
+The topic editor uses a native dropdown with the existing eight named defaults: Biosecurity, Digital, Disease, Food safety, Innovation, Medication, Product and Welfare. Each choice adds a removable selection; multiple topics remain supported. “อื่นๆ (ให้ระบุ)” opens a field for a custom topic, which may be added explicitly or with the final save. Duplicate choices do not duplicate categories. Custom names retain commas and other literal text. Existing arbitrary categories, including the legacy `Other` value, are retained until the user changes them; no migration reclassifies stored records. The existing Backend categories-array validation, ownership, optimistic revisions and retry guards remain unchanged. This release only updates the frontend and uses Backend version 33.
+
+The active farm board renderer is inline in `frontend/index.html`. It emits the same ordered category sections for each visible region, including empty sections where another region has that category. Nested CSS subgrids share the category heading and list tracks, so category dividers, headings and first list starts align despite differing farm counts, wrapped names and two-column lists. Heights follow actual content rather than fixed card counts. Filters recompute the displayed categories; single-column mobile layout uses natural section heights. Regions and farm IDs remain unchanged.
 
 ## Thai details, taxonomy and private photos (v0.1.58)
 
