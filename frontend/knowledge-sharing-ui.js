@@ -38,7 +38,7 @@
    const person=view.speakers.find(p=>p.id===selected),rows=core.select(view,{year,scope,search:query,person:person?.id||'all'}),includeHistory=body.querySelector('[data-ks-export-content]').value==='history';
    const snapshot={data:view,rows,selection:{year,scope,query,memberId:person?.id||null},title:person?person.displayName:'ภาพรวมทีมสัตวแพทย์บริการวิชาการสุกร',filters:`ปี: ${year==='all'?'ทุกปี':year} · ${scope==='all'?'ทุกกลุ่ม รวม CPF BU สุกร':'นอก CPF BU สุกร'}${query?' · ค้นหา: '+query.slice(0,150):''}`};
    const status=body.querySelector('[data-ks-export-status]'),controls=[...surface.querySelectorAll('button,input,select')].map(el=>({el,disabled:el.disabled}));controls.forEach(({el})=>el.disabled=true);status.textContent='กำลังสร้างไฟล์…';
-   try{await options.exportReport(format,snapshot,includeHistory);if(status.isConnected)status.textContent='สร้างไฟล์เรียบร้อย'+(format==='png'&&includeHistory?' · ประวัติแบ่งเป็น PNG หลายหน้า':'');}
+   try{await options.exportReport(format,snapshot,includeHistory);if(status.isConnected)status.textContent='สร้างไฟล์เรียบร้อย'+(format==='png'&&includeHistory?' · รวม PNG ทุกหน้าไว้ใน ZIP':'');}
    catch(e){if(status.isConnected)status.textContent='ส่งออกไม่สำเร็จ: '+String(e.message||e);}
    finally{exportBusy=false;if(!disposed&&body.isConnected)controls.forEach(({el,disabled})=>el.disabled=disabled);}
   }
