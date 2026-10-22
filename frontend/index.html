@@ -927,7 +927,7 @@ async function exportOverview(format){
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Farm_Health_Dashboard_${today()}_${meta016.id}.${format}`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);toast('สร้างไฟล์เรียบร้อย');
  }catch(e){toast('ส่งออกไม่สำเร็จ: '+e.message);}finally{overviewExportBusy=false;buttons.forEach(b=>{if(b)b.disabled=false;});}
 }
-</script><link rel="stylesheet" href="./knowledge-sharing.css?v=2"><script src="./knowledge-sharing-core.js?v=2"></script><script src="./knowledge-sharing-charts.js?v=2"></script><script src="./knowledge-sharing-editor.js?v=2"></script><script src="./knowledge-sharing-export.js?v=2"></script><script src="./knowledge-sharing-ui.js?v=2"></script><script src="./knowledge-sharing-import.js?v=2"></script><script src="./knowledge-sharing-bridge.js?v=2"></script><script src="./ui-shell.js?v=55"></script>
+</script><link rel="stylesheet" href="./knowledge-sharing.css?v=57"><script src="./knowledge-sharing-core.js?v=57"></script><script src="./knowledge-sharing-charts.js?v=57"></script><script src="./knowledge-sharing-editor.js?v=57"></script><script src="./knowledge-sharing-export.js?v=57"></script><script src="./knowledge-sharing-ui.js?v=57"></script><script src="./knowledge-sharing-import.js?v=57"></script><script src="./knowledge-sharing-bridge.js?v=57"></script><script src="./ui-shell.js?v=55"></script>
 <script src="./cost-monthly-core.js?v=55"></script><script src="./cost-monthly-ui.js?v=55"></script>
 <script src="./map-ui.js?v=55"></script><script src="./disease-summary-core.js?v=55"></script><script src="./disease-summary-ui.js?v=55"></script>
 <script src="./dashboard-refinements046.js?v=55"></script>
