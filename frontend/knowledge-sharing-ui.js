@@ -28,7 +28,7 @@
    editor?.dispose();editor=null;gallery?.dispose();gallery=null;
    const person=view.speakers.find(p=>p.id===selected),rows=core.select(view,{year,scope,search:query,person:person?.id||'all'});
    const header=person?`<button class="back" data-ks-all>← ดูสมาชิกทั้งหมด</button><div class="detailhero"><div><h2>${esc(person.displayName)}</h2><p>${esc(personLabel(person))}</p></div></div>${person.membershipStatus==='former'?'<p class="notice">เก็บประวัติของอดีตสมาชิกไว้ โดยไม่ต้องมีบัญชีเข้าสู่ระบบ</p>':''}<p class="muted">ชื่อในข้อมูลเดิม: ${esc(person.sourceNames?.join(' / ')||person.sourceName||person.displayName)}</p>`:'';
-   body.innerHTML=header+controls()+`<div class="ks-export-actions"><label>ข้อมูลที่ส่งออก <select data-ks-export-content aria-label="ข้อมูลที่ส่งออก"><option value="dashboard">Dashboard</option><option value="history">Dashboard และประวัติทั้งหมดตามตัวกรอง</option></select></label><button data-ks-export="png">บันทึก PNG</button><button data-ks-export="pdf">บันทึก PDF</button><span data-ks-export-status role="status"></span></div><p class="ks-save-notice" role="status">${esc(notice)}</p><div data-ks-editor></div><div data-ks-gallery-slot></div>`+stats(rows)+(root.SVSKnowledgeCharts?root.SVSKnowledgeCharts.render(view,rows):'')+annual(rows)+(person?'':audienceGroups(rows)+`<section class="panel"><h2>สมาชิกและประวัติรายบุคคล</h2><p class="muted">คลิกชื่อเพื่อเปิดรายละเอียด รวมอดีตสมาชิก</p><div class="ks-member-directory">${core.bySpeaker(view,rows).map(p=>`<article>${nameButton(p)}<span class="muted">${esc(personLabel(p))}</span><b>${fmt(p.presentations)} รายการ</b></article>`).join('')||'<p class="muted">ไม่พบสมาชิกในขอบเขตที่เลือก</p>'}</div></section>`)+records(rows);
+   body.innerHTML=header+controls()+`<div class="ks-export-actions">${options.createEnabled&&data.access?.createProtocol===1?'<button class="primary" data-ks-create>+ เพิ่มข้อมูลของฉัน</button>':''}<label>ข้อมูลที่ส่งออก <select data-ks-export-content aria-label="ข้อมูลที่ส่งออก"><option value="dashboard">Dashboard</option><option value="history">Dashboard และประวัติทั้งหมดตามตัวกรอง</option></select></label><button data-ks-export="png">บันทึก PNG</button><button data-ks-export="pdf">บันทึก PDF</button><span data-ks-export-status role="status"></span></div><p class="ks-save-notice" role="status">${esc(notice)}</p><div data-ks-editor></div><div data-ks-gallery-slot></div>`+stats(rows)+(root.SVSKnowledgeCharts?root.SVSKnowledgeCharts.render(view,rows):'')+annual(rows)+(person?'':audienceGroups(rows)+`<section class="panel"><h2>สมาชิกและประวัติรายบุคคล</h2><p class="muted">คลิกชื่อเพื่อเปิดรายละเอียด รวมอดีตสมาชิก</p><div class="ks-member-directory">${core.bySpeaker(view,rows).map(p=>`<article>${nameButton(p)}<span class="muted">${esc(personLabel(p))}</span><b>${fmt(p.presentations)} รายการ</b></article>`).join('')||'<p class="muted">ไม่พบสมาชิกในขอบเขตที่เลือก</p>'}</div></section>`)+records(rows);
   }
   function canEdit(r){return options.editEnabled&&options.saveRecord&&data.access?.editProtocol===1&&data.access.editableRecordIds.includes(r.id);}
   function editRecord(id){
@@ -36,6 +36,11 @@
    editor?.dispose();const slot=body.querySelector('[data-ks-editor]');
    editor=root.SVSKnowledgeEditor.mount(slot,record,{save:options.saveRecord,validate:options.validateRecord,mediaEnabled:options.mediaEnabled,photoItems:data.photoItems,readPhoto:options.readPhoto,uploadPhoto:options.uploadPhoto,onClose:()=>{editor?.dispose();editor=null;slot.innerHTML='';},onReload:()=>{editor?.dispose();editor=null;reload();},onSaved:async result=>{editor?.dispose();editor=null;notice=result.unchanged?'ข้อมูลไม่เปลี่ยนแปลง ไม่มีการบันทึกซ้ำ':'บันทึกการแก้ไขแล้ว · Revision '+result.revision;await reload();}});
    slot.scrollIntoView({block:'start',behavior:'smooth'});
+  }
+  function createRecord(){
+   if(!options.createEnabled||data.access?.createProtocol!==1)return;editor?.dispose();const slot=body.querySelector('[data-ks-editor]'),now=new Date(),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'numeric'}).formatToParts(now),part=k=>Number(parts.find(p=>p.type===k).value);
+   const blank={id:'',revision:0,title:'',memberIds:[],speakerIds:[],year:part('year'),month:part('month'),datePrecision:'month',dateStart:null,dateEnd:null,durationDays:null,location:null,notes:null,audience:null,categories:[],channel:'onsite',channelOther:'',reach:'ภายในประเทศ',country:'',audienceGroup:'หน่วยงานภายนอก',audienceGroupOther:'',recipientOrganization:'',photoIds:[]};
+   editor=root.SVSKnowledgeEditor.mount(slot,blank,{mode:'create',actorName:options.actorName,create:options.createRecord,save:options.saveRecord,validate:options.validateRecord,mediaEnabled:options.mediaEnabled,photoItems:data.photoItems,readPhoto:options.readPhoto,uploadPhoto:options.uploadPhoto,onClose:()=>{editor?.dispose();editor=null;slot.innerHTML='';},onReload:()=>{editor?.dispose();editor=null;reload();},onSaved:async result=>{editor?.dispose();editor=null;notice='เพิ่มข้อมูลแล้ว';selected=null;year='all';scope='all';query='';page=0;await reload();}});slot.scrollIntoView({block:'start',behavior:'smooth'});
   }
   async function reload(){try{const latest=await options.loadData();if(disposed||!body.isConnected)return;data=latest;view=core.memberView(data);render();}catch(e){if(!disposed){notice='โหลดข้อมูลล่าสุดไม่สำเร็จ: '+String(e.message||e);render();}}}
   async function exportView(format){
@@ -51,6 +56,7 @@
   function click(e){const b=e.target.closest('button');if(!b||!host.contains(b))return;
    if(exportBusy||editor?.busy)return;
    if(b.hasAttribute('data-ks-export')){if(options.exportReport)exportView(b.dataset.ksExport);}
+   else if(b.hasAttribute('data-ks-create'))createRecord();
    else if(b.hasAttribute('data-ks-edit'))editRecord(b.dataset.ksEdit);
    else if(b.hasAttribute('data-ks-gallery')){const record=view.records.find(r=>r.id===b.dataset.ksGallery),slot=body.querySelector('[data-ks-gallery-slot]');gallery?.dispose();gallery=root.SVSKnowledgePhotos.gallery(slot,record,{read:options.readPhoto,onClose:()=>{gallery?.dispose();gallery=null;slot.innerHTML='';}});slot.scrollIntoView({block:'start'});}
    else if(b.hasAttribute('data-ks-back')){dispose();options.onBack?.();}
@@ -70,7 +76,7 @@
     if(data?.schemaVersion!==2||!Array.isArray(data.members)||!Array.isArray(data.records)||!Array.isArray(data.reviewItems))throw Error('รูปแบบข้อมูล Knowledge Sharing ไม่ตรงกับหน้าจอ');
     view=core.memberView(data);
     if(initial){selected=view.speakers.find(p=>initial.userId&&p.userId===initial.userId)?.id||null;
-     if(!selected){unavailable('ยังไม่พบประวัติ Knowledge Sharing ที่ผูกกับสมาชิกคนนี้');return;}}
+     if(!selected)notice='ยังไม่มีประวัติที่ผูกกับสมาชิกคนนี้ สามารถเพิ่มข้อมูลของบัญชีตนเองได้';}
     render();
    }catch(e){if(!disposed&&body.isConnected)unavailable('โหลดประวัติไม่ได้: '+String(e.message||e));}
   }

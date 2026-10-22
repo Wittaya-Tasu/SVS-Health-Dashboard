@@ -1,6 +1,6 @@
 # SVS Health Dashboard
 
-SVS059 / frontend v0.1.59 เพิ่ม Dropdown หมวดหัวข้อ Knowledge Sharing แบบเลือกได้หลายหมวด พร้อม “อื่นๆ” และจัดแนวประเภทฟาร์ม/โรงงานข้ามทุกภาคให้ตรงกันตามความสูงจริง ดู [การเชื่อมต่อและโครงสร้างข้อมูล](KNOWLEDGE_SHARING.md) ใช้ Backend version 33 เดิม คงข้อมูล สิทธิ์แก้ไขเฉพาะเจ้าของ/Admin, revision และรูปภาพสูงสุด 4 รูป รูปละ 20 MB
+SVS060 / frontend v0.1.60 เพิ่มข้อมูล Knowledge Sharing ของบัญชีตนเองได้ พร้อมรูปภาพและการป้องกันบันทึกซ้ำ จัด Other/อื่นๆ ไว้ท้ายกราฟ ปรับตำแหน่งการแสดงผลในภาพรวมฟาร์ม และเอาข้อความช่องประเภทที่ว่างออก ดู [การเชื่อมต่อและโครงสร้างข้อมูล](KNOWLEDGE_SHARING.md) คงสิทธิ์แก้ไขเฉพาะเจ้าของ/Admin, revision และรูปภาพสูงสุด 4 รูป รูปละ 20 MB
 
 Repository สำหรับหน้าเว็บบน GitHub Pages และ Backend บน Google Apps Script ใช้ Google Sheets เก็บข้อมูลและ Google Drive เก็บไฟล์ ชื่อระบบล่าสุดตามผู้ใช้คือ **SVS Health Dashboard** โดยนำข้อกำหนด Smart SVS v1.6 มาใช้ต่อ
 

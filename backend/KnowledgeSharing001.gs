@@ -123,6 +123,7 @@ function ksRead001(){
 function knowledgeSharing001(u,p){
  const actor=ksActor001(u,['previewImport','applyImport'].includes(p.op));
  if(p.op==='read')return typeof ksReadEditable002==='function'?ksReadEditable002(actor):ksRead001();
+ if(['createRecord','validateCreate'].includes(p.op)){check(typeof ksCreate004_==='function','กรุณาอัปเดต Backend สำหรับเพิ่มข้อมูล');return ksCreate004_(actor,p);}
  if(p.op==='updateRecord'){check(typeof ksEdit002==='function','ยังไม่เปิดแก้ไข Knowledge Sharing');return ksEdit002(actor,p);}
  if(p.op==='validateRecord'){check(typeof ksValidateRecord003_==='function','กรุณาอัปเดต Backend');return ksValidateRecord003_(actor,p);}
  if(['uploadPhoto','readPhoto'].includes(p.op)){check(typeof ksMedia003_==='function','ยังไม่เปิดใช้งานรูปภาพ');return ksMedia003_(actor,p);}

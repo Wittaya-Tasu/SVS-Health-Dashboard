@@ -1,4 +1,14 @@
-# SVS059 Knowledge Sharing
+# SVS060 Knowledge Sharing
+
+## Self-owned new entries (v0.1.60)
+
+Authenticated active members can add their own presentations through `createRecord` / `validateCreate`. The Backend derives the speaker/member from the authenticated Users row, never from a submitted owner ID. A member without an imported profile gets a separate linked Knowledge Sharing profile on the first committed entry; Users and imported source data remain untouched. Admin can still edit all entries through the existing edit API. New entries begin at revision 1, use `KSN-` IDs, and share the existing details/category validation and photo permissions.
+
+`KnowledgeSharingCreate004.gs` stores an append-only `KnowledgeSharingCreated004` journal, created on the first new save. STAGING rows remain invisible until storage verification and audit succeed. Request IDs, current-session ownership, hashes and the existing script lock protect retries; lost creation responses cannot duplicate an entry. The effective read merges committed creations before applying the normal revision journal. Existing source snapshots, source identifiers, former members and financial data are unchanged. All new helper functions have private underscore names.
+
+The editor validates and prepares selected images before committing the initial entry, then uploads and attaches photos through the existing authenticated media/edit operations. If a later upload fails, the saved entry remains available and the form explains that the remaining photos/details are incomplete. Retrying reuses creation/upload/edit request IDs. Optional photo-free entries complete in one creation save. Graph topic ordering moves the legacy literal Other (and Thai equivalents) to the end without changing totals or shares.
+
+Deploy only the precise current `Code.gs` create capability flag, dispatch in KnowledgeSharing001.gs, effective-read integration in KnowledgeSharingEdits002.gs, and the new Create004 module. Preserve the rest of the current deployed Backend. Bootstrap advertises `knowledgeSharingCreateProtocol: 1`; UI only enables self-creation when the server advertises support.
 
 ## Topic dropdown and aligned regional farm board (v0.1.59)
 

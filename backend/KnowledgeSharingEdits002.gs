@@ -10,7 +10,7 @@ function ksEditRows002(){
 }
 function ksCanEdit002(actor,data,record){return actor.role==='Admin'||data.members.some(m=>m.kind==='person'&&m.userId===actor.id&&record.memberIds.includes(m.id));}
 function ksEffective002(){
- const data=ksRead001(),batchId=prop(KS001.active),records=new Map(data.records.map(r=>[r.id,r]));
+ const data=ksRead001(),batchId=prop(KS001.active);if(typeof ksCreatedData004_==='function')ksCreatedData004_(data,batchId);const records=new Map(data.records.map(r=>[r.id,r]));
  const events=ksEditRows002().filter(e=>e.batchId===batchId&&e.state==='COMMITTED'),ids=new Set();
  for(const e of events){
   check(!ids.has(e.id),'ประวัติการแก้ไข Knowledge Sharing มีรหัสซ้ำ');ids.add(e.id);
@@ -21,7 +21,7 @@ function ksEffective002(){
  data.records=data.records.map(r=>records.get(r.id));return data;
 }
 function ksReadEditable002(actor){
- let data=ksEffective002();if(typeof ksDetailsRead003_==='function')data=ksDetailsRead003_(data);data.access={editProtocol:1,editableRecordIds:data.records.filter(r=>ksCanEdit002(actor,data,r)).map(r=>r.id)};return data;
+ let data=ksEffective002();if(typeof ksDetailsRead003_==='function')data=ksDetailsRead003_(data);data.access={editProtocol:1,createProtocol:typeof ksCreate004_==='function'?1:0,editableRecordIds:data.records.filter(r=>ksCanEdit002(actor,data,r)).map(r=>r.id)};return data;
 }
 function ksPatch002(record,patch,actor){
  check(patch&&typeof patch==='object'&&!Array.isArray(patch)&&Object.keys(patch).length>0&&Object.keys(patch).every(k=>KS002.fields.includes(k)),'มีช่องข้อมูลที่ไม่อนุญาตให้แก้ไข');

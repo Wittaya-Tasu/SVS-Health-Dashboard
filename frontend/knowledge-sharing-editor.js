@@ -4,10 +4,10 @@
  const dateInput=v=>v?`${v.slice(8,10)}/${v.slice(5,7)}/${Number(v.slice(0,4))+543}`:'';
  function parseDate(value){if(!value.trim())return null;const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(value.trim());if(!m)throw Error('ระบุวันที่เป็น วว/ดด/พ.ศ. เช่น 22/10/2569');const iso=`${Number(m[3])-543}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)||isNaN(Date.parse(iso))||new Date(iso).toISOString().slice(0,10)!==iso)throw Error('วันที่ไม่ถูกต้อง');return iso;}
  function mount(host,source,options){
-  const core=root.SVSKnowledge,record=core.normalizeRecord(source);let disposed=false,busy=false,pending=null,durationTouched=false,lastStart=dateInput(record.dateStart);
+  const core=root.SVSKnowledge,record=core.normalizeRecord(source),isNew=options.mode==='create',saveLabel=isNew?'เพิ่มข้อมูล':'บันทึกการแก้ไข';let created=false,createPending=null,disposed=false,busy=false,pending=null,durationTouched=false,lastStart=dateInput(record.dateStart);
   const select=(key,label,values,current=record[key])=>`<label>${label}<select name="${key}">${values.map(v=>{const [value,text]=Array.isArray(v)?v:[v,v];return `<option value="${esc(value)}" ${value===current?'selected':''}>${esc(text)}</option>`;}).join('')}</select></label>`;
   const input=(key,label,value,type='text',attrs='')=>`<label>${label}<input name="${key}" type="${type}" value="${esc(value)}" ${attrs}></label>`;
-  host.innerHTML=`<section class="panel ks-editor" role="region" aria-label="แก้ไขประวัติ Knowledge Sharing"><div class="panelhead"><h2>แก้ไขรายละเอียดการแบ่งปันความรู้</h2><button type="button" data-ke-close>ปิด</button></div><p class="muted">Revision ${record.revision} · ${esc(record.id)}</p><p class="notice">ชื่อผู้บรรยายและรหัสอ้างอิงคงเดิม${record.memberIds.length>1?' · รายการร่วมบรรยายมีผลต่อประวัติผู้ร่วมบรรยายทุกคน':''}</p><form><fieldset><div class="ks-editor-grid">
+  host.innerHTML=`<section class="panel ks-editor" role="region" aria-label="แก้ไขประวัติ Knowledge Sharing"><div class="panelhead"><h2>${isNew?'เพิ่มข้อมูลการแบ่งปันความรู้':'แก้ไขรายละเอียดการแบ่งปันความรู้'}</h2><button type="button" data-ke-close>ปิด</button></div><p class="muted">${isNew?'ผู้บรรยาย: '+esc(options.actorName):'Revision '+record.revision+' · '+esc(record.id)}</p><p class="notice">${isNew?'บันทึกเป็นประวัติของบัญชีที่เข้าสู่ระบบ':'ชื่อผู้บรรยายและรหัสอ้างอิงคงเดิม'}${record.memberIds.length>1?' · รายการร่วมบรรยายมีผลต่อประวัติผู้ร่วมบรรยายทุกคน':''}</p><form><fieldset><div class="ks-editor-grid">
    <label class="ks-wide">หัวข้อบรรยาย<textarea name="title" maxlength="5000" required>${esc(record.title)}</textarea></label>
    ${input('yearBE','ปี พ.ศ.',record.year+543,'number','min="2443" max="2743" required')}
    ${select('month','เดือน',core.months.map((name,i)=>[String(i+1),name]),String(record.month))}
@@ -26,8 +26,8 @@
    <div class="ks-wide ks-topics"><label>หมวดหัวข้อ (เลือกได้หลายหมวด)<select name="categoryChoice"><option value="">เลือกหมวดหัวข้อ…</option>${['Biosecurity','Digital','Disease','Food safety','Innovation','Medication','Product','Welfare'].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}<option value="__other__">อื่นๆ (ให้ระบุ)</option></select></label><div data-ke-topics class="ks-topic-list" aria-label="หมวดหัวข้อที่เลือก"></div><div data-ke-other-topic hidden><label>ระบุหมวดหัวข้ออื่นๆ<input name="categoryOther" maxlength="300" placeholder="ระบุหนึ่งหมวด แล้วกดเพิ่มหมวด"></label><button type="button" data-ke-add-topic>เพิ่มหมวด</button></div><p data-ke-topic-status class="muted" role="status"></p></div>
    <label class="ks-wide">หมายเหตุ<textarea name="notes" maxlength="15000">${esc(record.notes)}</textarea></label>
    <div class="ks-wide" data-ke-photos></div>
-   <label class="ks-wide">เหตุผลการแก้ไข<input name="reason" maxlength="1000" required placeholder="เช่น แก้รายละเอียดตามหนังสือเชิญ"></label>
-  </div></fieldset><p data-ke-error class="error" role="alert"></p><p data-ke-progress role="status"></p><p class="muted">เก็บข้อมูลเดิมและประวัติการแก้ไข หากมีคนอื่นแก้ก่อน ระบบจะให้โหลดข้อมูลล่าสุด</p><div class="actions"><button class="primary" type="submit">บันทึกการแก้ไข</button><button type="button" data-ke-reload>โหลดข้อมูลล่าสุด</button></div></form></section>`;
+   <label class="ks-wide">เหตุผลการแก้ไข<input name="reason" maxlength="1000" value="${isNew?'เพิ่มประวัติการแบ่งปันความรู้':''}" required placeholder="เช่น แก้รายละเอียดตามหนังสือเชิญ"></label>
+  </div></fieldset><p data-ke-error class="error" role="alert"></p><p data-ke-progress role="status"></p><p class="muted">เก็บข้อมูลเดิมและประวัติการแก้ไข หากมีคนอื่นแก้ก่อน ระบบจะให้โหลดข้อมูลล่าสุด</p><div class="actions"><button class="primary" type="submit">${saveLabel}</button><button type="button" data-ke-reload>โหลดข้อมูลล่าสุด</button></div></form></section>`;
   const form=host.querySelector('form'),fieldset=form.querySelector('fieldset'),error=form.querySelector('[data-ke-error]'),save=form.querySelector('[type=submit]'),value=k=>form.elements[k].value;
   const categories=[...record.categories],topicList=host.querySelector('[data-ke-topics]'),topicStatus=host.querySelector('[data-ke-topic-status]'),otherTopic=host.querySelector('[data-ke-other-topic]');
   function renderTopics(){topicList.innerHTML=categories.map((c,i)=>`<span class="ks-topic-chip"><span>${esc(c==='Other'?'อื่นๆ (ข้อมูลเดิม)':c)}</span><button type="button" data-ke-remove-topic="${i}" aria-label="นำหมวด ${esc(c)} ออก">×</button></span>`).join('');topicList.querySelectorAll('[data-ke-remove-topic]').forEach(b=>b.onclick=()=>{categories.splice(Number(b.dataset.keRemoveTopic),1);topicStatus.textContent='นำหมวดออกแล้ว';renderTopics();});}
@@ -50,14 +50,20 @@
    }catch(err){error.textContent=String(err.message||err);return;}
    busy=true;fieldset.disabled=true;save.disabled=true;save.textContent='กำลังบันทึก…';
    try{
+    if(isNew&&!created){
+     await picker.prepare();
+     if(!createPending){await options.validate({op:'validateCreate',detailsProtocol:3,patch:{...patch,photoIds:[]}});createPending={op:'createRecord',detailsProtocol:3,requestId:'KSC-'+crypto.randomUUID(),patch:{...patch,photoIds:[]}};}
+     const result=await options.create(createPending);Object.assign(record,result.record);created=true;form.querySelector('[data-ke-progress]').textContent='เพิ่มรายการแล้ว กำลังบันทึกรูปภาพและรายละเอียดให้ครบ…';
+     if(picker.count===0&&JSON.stringify(patch)===JSON.stringify(createPending.patch)){if(!disposed)await options.onSaved(result);return;}
+    }
     const retryContent=JSON.stringify({patch,reason:value('reason').trim()});
     // A committed save may have lost its response: retry its exact ID before checking the old revision.
-    if(pending&&pending.content===retryContent){const result=await options.save(pending.params);if(!disposed)await options.onSaved(result);return;}
+    if(pending&&pending.content===retryContent){const result=await options.save(pending.params);if(!disposed)await options.onSaved(isNew?{...result,created:true,id:record.id}:result);return;}
     await options.validate({op:'validateRecord',detailsProtocol:3,id:record.id,expectedRevision:record.revision,patch});patch.photoIds=await picker.upload();if(disposed)return;
     const content=JSON.stringify({patch,reason:value('reason').trim()});if(!pending||pending.content!==content)pending={content,params:{op:'updateRecord',detailsProtocol:3,id:record.id,expectedRevision:record.revision,requestId:'KSE-'+crypto.randomUUID(),patch,reason:value('reason').trim()}};
-    const result=await options.save(pending.params);if(!disposed)await options.onSaved(result);
-   }catch(err){if(!disposed)error.textContent=String(err.message||err)+' หากการเชื่อมต่อขัดข้อง ให้ลองบันทึกคำขอเดิมอีกครั้ง';}
-   finally{busy=false;if(!disposed){fieldset.disabled=false;conditional();save.disabled=false;save.textContent='บันทึกการแก้ไข';}}
+    const result=await options.save(pending.params);if(!disposed)await options.onSaved(isNew?{...result,created:true,id:record.id}:result);
+   }catch(err){if(!disposed)error.textContent=(created?'เพิ่มรายการแล้ว แต่ยังบันทึกรายละเอียดหรือรูปภาพไม่ครบ · ':'')+String(err.message||err)+' หากการเชื่อมต่อขัดข้อง ให้ลองบันทึกคำขอเดิมอีกครั้ง';}
+   finally{busy=false;if(!disposed){fieldset.disabled=false;conditional();save.disabled=false;save.textContent=saveLabel;}}
   };
   host.querySelector('[data-ke-close]').onclick=()=>{if(!busy)options.onClose();};host.querySelector('[data-ke-reload]').onclick=()=>{if(!busy)options.onReload();};
   return {dispose(){disposed=true;picker.dispose();form.onsubmit=null;},get busy(){return busy;}};
