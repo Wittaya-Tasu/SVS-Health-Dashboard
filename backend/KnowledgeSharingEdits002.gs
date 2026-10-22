@@ -45,7 +45,7 @@ function ksEditWrite002(value){
  let s=ksSheet001(KS002.sheet,KS002.headers,true);
  if(!s)s=book().insertSheet(KS002.sheet);
  if(!s.getLastRow()){s.getRange(1,1,1,KS002.headers.length).setNumberFormat('@').setValues([KS002.headers]);s.setFrozenRows(1);}
- const row=value._row||s.getLastRow()+1;s.getRange(row,1,1,KS002.headers.length).setNumberFormat('@').setValues([KS002.headers.map(k=>String(value[k]??''))]);return Object.assign({},value,{_row:row});
+ const row=value._row||s.getLastRow()+1;s.getRange(row,1,1,KS002.headers.length).setNumberFormat('@').setValues([KS002.headers.map(k=>String(value[k]??'')).map(v=>/^[=+\-@]/.test(v)?"'"+v:v)]);return Object.assign({},value,{_row:row});
 }
 function ksEdit002(actor,p){
  check(LockService.getScriptLock().hasLock(),'ต้องบันทึกผ่าน script lock ของระบบ');
