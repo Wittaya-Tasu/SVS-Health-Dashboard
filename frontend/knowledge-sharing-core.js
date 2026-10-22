@@ -43,5 +43,11 @@
   const records=select(view,{person:id});
   return {member,records,summary:summarize(records),years:yearly(records),places:grouped(records,r=>r.location||'ไม่ระบุสถานที่')};
  }
- return {select,summarize,grouped,bySpeaker,yearly,memberView,memberHistory};
+ function topGroups(records,key,limit=8){const all=grouped(records,key);if(all.length<=limit)return all;const top=all.slice(0,limit),labels=new Set(top.map(g=>g.label));return [...top,{label:'อื่นๆ ('+(all.length-limit)+')',...summarize(records.filter(r=>!labels.has(key(r))))}];}
+ function dashboard(data,records){
+  const tags=records.flatMap(r=>(r.categories.length?r.categories:['ไม่ระบุหมวด']).map(label=>({label,record:r}))),total=tags.length;
+  const categories=[...new Set(tags.map(t=>t.label))].map(label=>({label,presentations:tags.filter(t=>t.label===label).length})).sort((a,b)=>b.presentations-a.presentations||a.label.localeCompare(b.label));
+  return {annual:yearly(records,[...new Set(data.records.map(r=>r.year))].sort()),people:bySpeaker(data,records),places:topGroups(records,r=>r.location||'ไม่ระบุสถานที่'),groups:grouped(records,r=>r.audienceGroup),channels:grouped(records,r=>({onsite:'ณ สถานที่',online:'ออนไลน์',hybrid:'ผสมผสาน'}[r.channel]||r.channel)),categories:categories.map(g=>({...g,share:total?g.presentations/total:0})),tagCount:total};
+ }
+ return {select,summarize,grouped,bySpeaker,yearly,memberView,memberHistory,topGroups,dashboard};
 });

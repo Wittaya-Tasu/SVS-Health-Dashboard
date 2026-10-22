@@ -121,8 +121,9 @@ function ksRead001(){
  check(metadata===1&&ksHash001(ksCanonical001(result))===batch.payloadHash,'ชุดข้อมูล Knowledge Sharing ไม่ตรง receipt');return result;
 }
 function knowledgeSharing001(u,p){
- const actor=ksActor001(u,p.op!=='read');
- if(p.op==='read')return ksRead001();
+ const actor=ksActor001(u,['previewImport','applyImport'].includes(p.op));
+ if(p.op==='read')return typeof ksReadEditable002==='function'?ksReadEditable002(actor):ksRead001();
+ if(p.op==='updateRecord'){check(typeof ksEdit002==='function','ยังไม่เปิดแก้ไข Knowledge Sharing');return ksEdit002(actor,p);}
  check(['previewImport','applyImport'].includes(p.op),'คำสั่ง Knowledge Sharing ไม่ถูกต้อง');
  const data=p.dataset,validated=ksPayload001(data),hash=validated.hash,derivedId='KSB-'+ksHash001(data.datasetId+':'+hash).slice(0,16),batchId=p.batchId||derivedId;
  check(/^KSB-[a-f0-9]{16}$/.test(batchId),'batch ID ไม่ถูกต้อง');

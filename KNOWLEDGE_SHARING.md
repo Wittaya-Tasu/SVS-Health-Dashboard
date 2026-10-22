@@ -1,4 +1,20 @@
-# SVS056 Knowledge Sharing
+# SVS057 Knowledge Sharing
+
+## Record editing and dashboard (v0.1.57)
+
+The authenticated `knowledgeSharing` action now supports `updateRecord`. The current deployed Code.gs bootstrap advertises `knowledgeSharingEditProtocol: 1` only when `ksEdit002` is installed. `read` returns server-computed `access.editableRecordIds`; the UI shows edit controls only for those records. The server independently reloads the ACTIVE Users role and derives ownership using `members.userId` and immutable `record.memberIds`. Any linked co-presenter may edit a shared presentation; all co-presenters see the same corrected record. Admin may edit all presentations, including former-member and team histories. Management may edit only presentations linked to their own account, just like other members. A caller-supplied role or owner ID never grants permission.
+
+Editable fields are title, year/month/dates/precision, location, audience (blank remains unknown, 0 is known), categories, presentation channel, audience reach/group, and notes. Member identities, co-presenter ownership, source keys, original rows/fingerprints and record IDs cannot be reassigned by this endpoint. Date, category and audience fields are validated and derived flags are recalculated server-side. Each edit requires the expected record revision, reason, and stable request ID. Stale saves fail visibly. Repeating the same committed request is a no-op, while reusing its ID with a different actor or payload is rejected.
+
+`KnowledgeSharingEdits002` is an append-only journal over the immutable imported snapshot. Each entry retains full before/after JSON, hashes, actor, timestamps, reason and revisions. STAGING rows stay invisible; an Audit entry must be durable before COMMITTED publication. Exact retries recover interrupted publication without another revision or audit. A competing request cannot overwrite pending changes to the same record. Reads validate the revision/hash chain before applying committed entries. Farms, Records, Users, costs and initial import rows are never rewritten by this editor. Initial-import replay cannot reset edited histories. No old setup or migration is required.
+
+Dashboard graphs show annual activity, presentation channel, member credits (top 10 with the full member directory below), topic-category shares, locations (top 8 plus all remaining locations grouped), and audience groups. The same year/scope/search/member filters apply to charts, metrics and exports. Category percentages use all category assignments because one presentation may have multiple tags; member credits may overlap, while organizational totals count each presentation once. Pending source-review items remain historical evidence and are not automatically marked resolved by a general edit.
+
+Exports offer Dashboard only or Dashboard plus **all** matching history rows, irrespective of the table's current page. PDF uses the existing raster report generator; PNG uses numbered pages when history is included. Both include Thai labels, selected scope, current revisions and the existing server-issued export attribution/audit. Long history text wraps and continues across pages. The export uses a stable copy of the displayed data, and controls are disabled while files are generated.
+
+Deploy only these changes onto the verified current Backend: add `KnowledgeSharingEdits002.gs`, update `KnowledgeSharing001.gs`, add the edit capability in Code.gs bootstrap, and add `knowledgeSharing` to `prepareExport016`'s report allowlist. **Do not deploy the legacy repository Code.gs.** Workspace QA tests current captured source with in-memory Google services for ownership/forged-role denial, former/shared history, immutable source, revision conflicts, retry, interruption and corrupt journals. Browser QA covers edit/reload/no-op/conflict, six charts, filtered PDF/PNG, complete history pagination, long Thai text and mobile layout. Test artifacts distinguish local/mock from actual production verification.
+
+## Original import foundation (v0.1.56)
 
 Frontend v0.1.56, based on SVS055 / `0e628d65d98f597ec7e291e29e9a965788a06128`. Backend changes are integrated against verified deployed source v29 and deployed as Apps Script version 30 on 21 October 2026. Production data is imported separately through the authenticated Admin preview/apply flow.
 
