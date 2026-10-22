@@ -1,4 +1,18 @@
-# SVS057 Knowledge Sharing
+# SVS058 Knowledge Sharing
+
+## Thai details, taxonomy and private photos (v0.1.58)
+
+The form displays Buddhist years, abbreviated Thai months, and a nullable numeric duration. Optional start/end dates use DD/MM/BE on screen; the server retains CE years and ISO dates for sorting, source IDs and history. Date precision remains an internal field; unknown/conflicting legacy dates never acquire invented days. Known contiguous legacy dates provide an initial duration, which a member may correct.
+
+Canonical presentation channels are Online, Onsite and Other with required explanation. Legacy hybrid displays as Other / Hybrid. Reach is domestic or foreign; foreign saves require a country. Recipient organization is separate from location. Audience groups are CP, CPF, partner/customer, external organization, international seminar and Other with explanation. Both old CPF groups display as CPF; CP abroad displays as foreign / CP without inventing a country. The raw immutable import and prior revision chain are unchanged. Legacy confirmed Swine-BU scope remains intact for existing filters; changing a non-CPF record to CPF leaves its unconfirmed BU scope unknown instead of classifying it automatically.
+
+`KnowledgeSharingDetails003.gs` projects this taxonomy on read and validates new saves. Bootstrap advertises `knowledgeSharingDetailsProtocol: 3` and `knowledgeSharingMediaProtocol: 3`. New editors send `detailsProtocol: 3`; stale older editors are rejected with a refresh message before mutation. Request IDs and optimistic revisions remain mandatory. A retry after a lost committed-save response is sent with the exact original ID before rechecking the old revision.
+
+`KnowledgeSharingMedia003.gs` stores originals and small/report JPEG derivatives privately in the existing configured Drive folder. It never changes Drive sharing. The dedicated `KnowledgeSharingPhotos003` metadata table is created on first successful upload, not on reads. Originals accept JPG/PNG/WebP up to 20 MiB each; a record may link at most four photo IDs. Uploads are sequential so even a maximum-size original plus bounded derivatives stays below the existing 30-million-character request limit. The server checks current ownership/revision, signatures and sizes, record binding and unique upload IDs. Repeated upload IDs cannot create duplicate files or switch content. Uncommitted photos are readable only by their uploader/Admin; attached photos are readable through the normal authenticated Knowledge Sharing viewer. Drive IDs are never returned to the browser.
+
+Removing a photo link retains originals and revision history. Failed creation cleans up only new, provably unreferenced files. A lost response after durable metadata or audit is recoverable without deleting referenced files. Gallery and original downloads use authenticated API calls. History PDF/PNG exports include report-size photo pages; multi-page PNG remains one ZIP. New server helpers use private underscore names as described in [Google's Apps Script documentation](https://developers.google.com/apps-script/guides/html/communication#private_functions), so photo operations are not exposed as callable HTML-service helpers.
+
+Deploy the five changed/current modules only: precise Code.gs capability insertion, KnowledgeSharing001.gs dispatch/hash helper, KnowledgeSharingEdits002.gs validation integration, and the two new 003 modules. Preserve all other deployed files. Do not run old migrations or replace the legacy repository Code.gs wholesale. Workspace QA covers projection/source preservation, conditional fields, private media permissions, four-photo limits, 20 MiB and oversize originals, original checksum, retry/Drive/audit/metadata failures, BE/month/duration form, large bars, complete photo exports and mobile layout. Production checks are recorded separately in the private workspace release report.
 
 ## Record editing and dashboard (v0.1.57)
 

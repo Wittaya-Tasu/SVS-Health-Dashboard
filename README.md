@@ -1,6 +1,6 @@
 # SVS Health Dashboard
 
-SVS057 / frontend v0.1.57 เพิ่มสิทธิ์แก้ไข Knowledge Sharing เฉพาะเจ้าของรายการ (Admin แก้ได้ทั้งหมด), Dashboard 6 กราฟ และส่งออก PDF/PNG ดู [การเชื่อมต่อและโครงสร้างข้อมูล](KNOWLEDGE_SHARING.md) Backend เชื่อมกับ source Apps Script ปัจจุบันโดยเก็บข้อมูลและ revision แยกจากงานฟาร์ม
+SVS058 / frontend v0.1.58 ปรับ Knowledge Sharing เป็นปี พ.ศ./เดือนไทย เพิ่มจำนวนวัน ชื่อหน่วยงาน กลุ่มผู้ฟังใหม่ ประเทศและรายละเอียด Other พร้อมกราฟแท่งขนาดใหญ่และรูปภาพสูงสุด 4 รูป รูปละ 20 MB ดู [การเชื่อมต่อและโครงสร้างข้อมูล](KNOWLEDGE_SHARING.md) ยังคงสิทธิ์แก้ไขเฉพาะเจ้าของ/Admin และเก็บ revision แยกจากงานฟาร์ม
 
 Repository สำหรับหน้าเว็บบน GitHub Pages และ Backend บน Google Apps Script ใช้ Google Sheets เก็บข้อมูลและ Google Drive เก็บไฟล์ ชื่อระบบล่าสุดตามผู้ใช้คือ **SVS Health Dashboard** โดยนำข้อกำหนด Smart SVS v1.6 มาใช้ต่อ
 

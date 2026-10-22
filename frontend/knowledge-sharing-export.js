@@ -11,12 +11,12 @@
  function drawBars(x,items,left,top,width,height,labelKey='label'){
   if(!items.length){text(x,'ไม่มีข้อมูลในขอบเขตที่เลือก',left,top,17,muted);return;}
   const max=Math.max(1,...items.map(g=>g.presentations)),step=Math.min(52,height/items.length);
-  items.forEach((g,i)=>{const y=top+i*step,label=String(g[labelKey]??g.year),lines=wrap(x,label,width-64,16);text(x,lines.length>1?lines[0]+'…':lines[0],left,y,16);x.textAlign='right';text(x,fmt(g.presentations),left+width,y,17,ink,600);x.textAlign='left';x.fillStyle='#eaf0f3';x.fillRect(left,y+25,width,8);x.fillStyle=palette[i%palette.length];x.fillRect(left,y+25,width*g.presentations/max,8);});
+  items.forEach((g,i)=>{const y=top+i*step,label=String(g[labelKey]??g.year),labelW=Math.min(195,width*.4),barW=width-labelW-48,lines=wrap(x,label,labelW-12,16),barH=Math.min(26,step-7);text(x,lines.length>1?lines[0]+'…':lines[0],left,y+4,16);x.textAlign='right';text(x,fmt(g.presentations),left+width,y+4,17,ink,600);x.textAlign='left';x.fillStyle='#eaf0f3';x.fillRect(left+labelW,y+2,barW,barH);x.fillStyle='#176b67';x.fillRect(left+labelW,y+2,barW*g.presentations/max,barH);});
  }
  function summaryPage(s){
   const c=canvas(),x=header(c,s,'Dashboard · จำนวนรายการตามต้นทาง · รายละเอียดชื่อเต็มอยู่ในหน้าประวัติ'),d=root.SVSKnowledge.dashboard(s.data,s.rows),sum=root.SVSKnowledge.summarize(s.rows);
   [[sum.presentations,'รายการบรรยาย'],[sum.audience,'ผู้ฟังที่ระบุ (คน-ครั้ง)'],[sum.audienceMissing,'รายการไม่ระบุผู้ฟัง']].forEach((v,i)=>{const l=38+i*378;card(x,l,196,368,108,'','');text(x,fmt(v[0]),l+22,213,36,'#16677a',600);text(x,v[1],l+22,263,17,muted);});
-  card(x,38,324,552,284,'การแบ่งปันความรู้รายปี','จำนวนรายการต่อปี');drawBars(x,d.annual,60,414,508,175);
+  card(x,38,324,552,284,'การแบ่งปันความรู้รายปี (พ.ศ.)','จำนวนรายการต่อปี');drawBars(x,d.annual,60,414,508,175);
   card(x,610,324,552,284,'รูปแบบการแบ่งปัน','จำนวนรายการตามรูปแบบ');drawBars(x,d.channels,632,414,508,175);
   card(x,38,628,552,594,'จำนวนครั้งต่อสมาชิก','10 อันดับแรก · ให้เครดิตผู้ร่วมบรรยายแต่ละคน');drawBars(x,d.people.slice(0,10),60,724,508,478,'displayName');
   card(x,610,628,552,594,'สัดส่วนหมวดหัวข้อ','หนึ่งรายการติดได้หลายหมวด · % จากการติดหมวดทั้งหมด');
@@ -25,7 +25,7 @@
   d.categories.forEach((g,i)=>{const end=start+g.share*Math.PI*2;x.strokeStyle=palette[i%palette.length];x.beginPath();x.arc(cx,cy,r,start,end);x.stroke();start=end;});
   x.textAlign='center';text(x,fmt(d.tagCount),cx,817,33,ink,600);text(x,'การติดหมวด',cx,861,17,muted);x.textAlign='left';
   d.categories.forEach((g,i)=>{const yy=974+i*22;x.fillStyle=palette[i%palette.length];x.fillRect(637,yy+4,12,12);text(x,g.label,660,yy,15);x.textAlign='right';text(x,`${fmt(g.presentations)} · ${(g.share*100).toFixed(1)}%`,1139,yy,15);x.textAlign='left';});
-  card(x,38,1242,552,314,'สถานที่ / ช่องทาง','5 อันดับแรก (หน้าจอแสดง 8 อันดับและกลุ่มอื่นๆ)');drawBars(x,d.places.slice(0,5),60,1337,508,208);
+  card(x,38,1242,552,314,'สถานที่','5 อันดับแรก (หน้าจอแสดง 8 อันดับและกลุ่มอื่นๆ)');drawBars(x,d.places.slice(0,5),60,1337,508,208);
   card(x,610,1242,552,314,'กลุ่มผู้ฟัง','จำนวนรายการต่อกลุ่ม');drawBars(x,d.groups,632,1337,508,208);
   text(x,'ยอดหน่วยงานนับแต่ละรายการครั้งเดียว · ผู้ฟังเป็นคน-ครั้ง ไม่ใช่บุคคลไม่ซ้ำ',38,1574,16,muted);return c;
  }
@@ -35,7 +35,7 @@
   const begin=()=>{c=canvas();x=header(c,s,'ประวัติทั้งหมดตามตัวกรอง · หน้าที่ '+(pages.length+2));y=202;pages.push(c);};begin();
   const members=new Map(s.data.speakers.map(p=>[p.id,p.displayName]));
   rows.forEach((r,index)=>{
-   const lines=[`${index+1}. ${r.dateStart||r.year+'-'+String(r.month).padStart(2,'0')}${r.dateEnd&&r.dateEnd!==r.dateStart?' ถึง '+r.dateEnd:''} · Revision ${r.revision}`,r.title,'ผู้บรรยาย: '+r.speakerIds.map(id=>members.get(id)).join(', '),'สถานที่: '+(r.location||'ไม่ระบุ')+' · '+r.audienceGroup+' · '+r.reach,'ผู้ฟัง: '+fmt(r.audience)+' คน-ครั้ง · '+({onsite:'ณ สถานที่',online:'ออนไลน์',hybrid:'ผสมผสาน'}[r.channel]||r.channel)+' · หมวด: '+(r.categories.join(', ')||'ไม่ระบุ'),r.notes?'หมายเหตุ: '+r.notes:null,'รหัส: '+r.id].filter(Boolean);
+   const lines=[`${index+1}. ${root.SVSKnowledge.dateLabel(r)} · ${r.durationDays===null?'ไม่ระบุจำนวนวัน':r.durationDays+' วัน'} · Revision ${r.revision}`,r.title,'ผู้บรรยาย: '+r.speakerIds.map(id=>members.get(id)).join(', '),'ชื่อหน่วยงาน: '+(r.recipientOrganization||'ยังไม่ระบุ'),'สถานที่: '+(r.location||'ไม่ระบุ')+' · '+r.audienceGroup+(r.audienceGroupOther?' · '+r.audienceGroupOther:'')+' · '+r.reach+(r.reach==='ต่างประเทศ'?' · '+(r.country||'ยังไม่ระบุประเทศ'):''),'ผู้ฟัง: '+fmt(r.audience)+' คน-ครั้ง · '+root.SVSKnowledge.channelLabel(r)+' · หมวด: '+(r.categories.join(', ')||'ไม่ระบุ'),r.notes?'หมายเหตุ: '+r.notes:null,'รหัส: '+r.id].filter(Boolean);
    let first=true;
    for(const [li,line] of lines.entries()){
     const size=li===1?20:16,color=li===1?ink:muted;
@@ -48,7 +48,15 @@
   });
   if(!rows.length)text(x,'ไม่พบประวัติในขอบเขตที่เลือก',56,y,20,muted);return pages;
  }
- async function generate(snapshot,includeHistory){await document.fonts.ready;const s=structuredClone(snapshot);return [summaryPage(s),...(includeHistory?historyPages(s):[])];}
+ async function photoPages(s,start){
+  const pages=[];for(const record of s.rows){if(!record.photoIds?.length)continue;const c=canvas(),x=header(c,s,'รูปภาพประกอบ · หน้าที่ '+(start+pages.length));
+   const title=wrap(x,record.title,W-76,21);title.slice(0,3).forEach((line,i)=>text(x,line+(i===2&&title.length>3?'…':''),38,204+i*32,21,ink,600));text(x,root.SVSKnowledge.dateLabel(record),38,310,17,muted);
+   for(let i=0;i<record.photoIds.length;i++){const id=record.photoIds[i],url=s.photoImages?.[id];if(!url)throw Error('ไม่พบรูปสำหรับรายงาน กรุณาโหลดข้อมูลแล้วส่งออกใหม่');const image=new Image();image.src=url;await image.decode();const left=38+(i%2)*572,top=354+Math.floor(i/2)*590;
+    card(x,left,top,552,566,'','');text(x,'รูปที่ '+(i+1),left+16,top+14,17,muted);const scale=Math.min(520/image.width,510/image.height);x.drawImage(image,left+16+(520-image.width*scale)/2,top+44+(510-image.height*scale)/2,image.width*scale,image.height*scale);
+   }pages.push(c);
+  }return pages;
+ }
+ async function generate(snapshot,includeHistory){await document.fonts.ready;const s=structuredClone(snapshot),history=includeHistory?historyPages(s):[],photos=includeHistory?await photoPages(s,history.length+2):[];return [summaryPage(s),...history,...photos];}
  async function download(canvases,format,{pdf,name}){
   const deliver=(blob,filename=name)=>{if(!blob)throw Error('สร้างไฟล์ไม่สำเร็จ');const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);};
   if(format==='pdf'){deliver(pdf(canvases));return;}

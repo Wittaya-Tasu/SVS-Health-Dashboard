@@ -2,7 +2,7 @@
  * Session, current Users role and script lock are enforced by the existing dispatcher.
  * No source identities, ownership links, farm records or initial snapshot are rewritten.
  */
-const KS002={sheet:'KnowledgeSharingEdits002',headers:['id','batchId','recordId','expectedRevision','revision','actorId','requestHash','state','beforeHash','afterHash','beforeJson','afterJson','reason','createdAt','committedAt'],fields:['title','location','notes','year','month','datePrecision','dateStart','dateEnd','audience','categories','channel','reach','audienceGroup']};
+const KS002={sheet:'KnowledgeSharingEdits002',headers:['id','batchId','recordId','expectedRevision','revision','actorId','requestHash','state','beforeHash','afterHash','beforeJson','afterJson','reason','createdAt','committedAt'],fields:['title','location','notes','year','month','datePrecision','dateStart','dateEnd','audience','categories','channel','reach','audienceGroup','durationDays','channelOther','country','audienceGroupOther','recipientOrganization','photoIds']};
 function ksEditRows002(){
  const s=ksSheet001(KS002.sheet,KS002.headers,true);
  const entries=!s||s.getLastRow()<2?[]:s.getRange(2,1,s.getLastRow()-1,KS002.headers.length).getDisplayValues().map((v,i)=>({v,row:i+2})).filter(x=>x.v.some(Boolean)).map(({v,row})=>Object.assign({_row:row},Object.fromEntries(KS002.headers.map((k,j)=>[k,v[j]]))));
@@ -21,11 +21,11 @@ function ksEffective002(){
  data.records=data.records.map(r=>records.get(r.id));return data;
 }
 function ksReadEditable002(actor){
- const data=ksEffective002();data.access={editProtocol:1,editableRecordIds:data.records.filter(r=>ksCanEdit002(actor,data,r)).map(r=>r.id)};return data;
+ let data=ksEffective002();if(typeof ksDetailsRead003_==='function')data=ksDetailsRead003_(data);data.access={editProtocol:1,editableRecordIds:data.records.filter(r=>ksCanEdit002(actor,data,r)).map(r=>r.id)};return data;
 }
-function ksPatch002(record,patch){
+function ksPatch002(record,patch,actor){
  check(patch&&typeof patch==='object'&&!Array.isArray(patch)&&Object.keys(patch).length>0&&Object.keys(patch).every(k=>KS002.fields.includes(k)),'มีช่องข้อมูลที่ไม่อนุญาตให้แก้ไข');
- const r=Object.assign({},record,patch);
+ let r=Object.assign({},record,patch);
  ksString001(r.title,5000,'หัวข้อ');ksString001(r.location,5000,'สถานที่',true);ksString001(r.notes,15000,'หมายเหตุ',true);
  check(Number.isInteger(r.year)&&r.year>=1900&&r.year<=2200&&Number.isInteger(r.month)&&r.month>=1&&r.month<=12,'ปี/เดือนไม่ถูกต้อง');
  check(['day','range','month','conflict'].includes(r.datePrecision),'ความละเอียดวันที่ไม่ถูกต้อง');
@@ -36,10 +36,9 @@ function ksPatch002(record,patch){
  }
  check(r.audience===null||Number.isInteger(r.audience)&&r.audience>=0&&r.audience<=10000000,'ผู้ฟังต้องเป็นจำนวนเต็ม 0–10,000,000 หรือเว้นว่าง');r.audienceKnown=r.audience!==null;
  check(Array.isArray(r.categories)&&r.categories.length<=20&&r.categories.every(c=>typeof c==='string'&&c.trim()&&c.length<=300)&&new Set(r.categories).size===r.categories.length,'หมวดหัวข้อไม่ถูกต้องหรือซ้ำ');
- check(['onsite','online','hybrid'].includes(r.channel),'รูปแบบการบรรยายไม่ถูกต้อง');
- check(['ภายในประเทศ','นานาชาติ'].includes(r.reach),'ขอบเขตผู้ฟังไม่ถูกต้อง');
- check(['ภายใน CPF (BU สุกร)','ภายใน CPF (BU อื่น)','ภายในเครือ CP (ตปท)','ฟาร์มลูกค้าอาหารสัตว์','หน่วยงานอื่นๆ ภายนอก','งานสัมมนาระดับนานาชาติ'].includes(r.audienceGroup),'กลุ่มผู้ฟังไม่ถูกต้อง');
- r.outsideSwineBU=r.audienceGroup!=='ภายใน CPF (BU สุกร)';return r;
+ if(typeof ksDetailsValidate003_==='function')return ksDetailsValidate003_(record,r,patch,actor);
+ check(['onsite','online','hybrid'].includes(r.channel),'รูปแบบการบรรยายไม่ถูกต้อง');check(['ภายในประเทศ','นานาชาติ'].includes(r.reach),'ขอบเขตผู้ฟังไม่ถูกต้อง');
+ check(['ภายใน CPF (BU สุกร)','ภายใน CPF (BU อื่น)','ภายในเครือ CP (ตปท)','ฟาร์มลูกค้าอาหารสัตว์','หน่วยงานอื่นๆ ภายนอก','งานสัมมนาระดับนานาชาติ'].includes(r.audienceGroup),'กลุ่มผู้ฟังไม่ถูกต้อง');r.outsideSwineBU=r.audienceGroup!=='ภายใน CPF (BU สุกร)';return r;
 }
 function ksEditWrite002(value){
  let s=ksSheet001(KS002.sheet,KS002.headers,true);
@@ -48,6 +47,7 @@ function ksEditWrite002(value){
  const row=value._row||s.getLastRow()+1;s.getRange(row,1,1,KS002.headers.length).setNumberFormat('@').setValues([KS002.headers.map(k=>String(value[k]??'')).map(v=>/^[=+\-@]/.test(v)?"'"+v:v)]);return Object.assign({},value,{_row:row});
 }
 function ksEdit002(actor,p){
+ if(typeof ksDetailsRead003_==='function')check(p.detailsProtocol===3,'กรุณารีเฟรชหน้าเว็บเป็นรุ่นล่าสุดก่อนแก้ไข');
  check(LockService.getScriptLock().hasLock(),'ต้องบันทึกผ่าน script lock ของระบบ');
  check(typeof p.requestId==='string'&&/^KSE-[a-zA-Z0-9-]{16,80}$/.test(p.requestId),'รหัสคำขอบันทึกไม่ถูกต้อง');
  check(typeof p.id==='string'&&Number.isInteger(p.expectedRevision)&&p.expectedRevision>=1,'รหัสรายการหรือ revision ไม่ถูกต้อง');
@@ -61,8 +61,8 @@ function ksEdit002(actor,p){
  }
  check(record.revision===p.expectedRevision,'รายการนี้ถูกแก้ไขแล้ว กรุณาโหลดข้อมูลล่าสุดก่อนบันทึก');
  check(!events.some(e=>e.batchId===batchId&&e.recordId===p.id&&e.state!=='COMMITTED'&&e.id!==p.requestId),'มีคำขอแก้ไขรายการนี้ค้างอยู่ กรุณาลองบันทึกคำขอเดิมอีกครั้งหรือติดต่อ Admin');
- const changed=ksPatch002(record,p.patch);
- if(ksCanonical001(changed)===ksCanonical001(record))return {saved:false,unchanged:true,revision:record.revision};
+ const changed=ksPatch002(record,p.patch,actor),comparable=typeof ksNormalize003_==='function'?ksNormalize003_(record):record;
+ if(ksCanonical001(changed)===ksCanonical001(comparable))return {saved:false,unchanged:true,revision:record.revision};
  changed.revision=record.revision+1;changed.updatedAt=now();changed.updatedBy=actor.id;
  const afterJson=prior?prior.afterJson:JSON.stringify(changed),beforeJson=JSON.stringify(record);
  check(beforeJson.length<=45000&&afterJson.length<=45000,'รายละเอียดรายการยาวเกินกำหนด');

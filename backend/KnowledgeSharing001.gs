@@ -17,7 +17,7 @@ function ksCanonical001(v){
  check(!Object.keys(v).some(k=>['__proto__','constructor','prototype'].includes(k)),'Knowledge Sharing: ชื่อ key ไม่ปลอดภัย');
  return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+ksCanonical001(v[k])).join(',')+'}';
 }
-function ksHash001(value){return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,value,Utilities.Charset.UTF_8).map(b=>((b+256)%256).toString(16).padStart(2,'0')).join('');}
+function ksHash001(value){const digest=Array.isArray(value)?Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,value):Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,value,Utilities.Charset.UTF_8);return digest.map(b=>((b+256)%256).toString(16).padStart(2,'0')).join('');}
 function ksActor001(u,edit){
  const actual=u&&rows('Users').find(x=>x.id===u.id);
  check(actual&&actual.status==='ACTIVE'&&['Admin','Management','Operation'].includes(actual.role),'บัญชีไม่ได้รับอนุญาต');
@@ -124,6 +124,8 @@ function knowledgeSharing001(u,p){
  const actor=ksActor001(u,['previewImport','applyImport'].includes(p.op));
  if(p.op==='read')return typeof ksReadEditable002==='function'?ksReadEditable002(actor):ksRead001();
  if(p.op==='updateRecord'){check(typeof ksEdit002==='function','ยังไม่เปิดแก้ไข Knowledge Sharing');return ksEdit002(actor,p);}
+ if(p.op==='validateRecord'){check(typeof ksValidateRecord003_==='function','กรุณาอัปเดต Backend');return ksValidateRecord003_(actor,p);}
+ if(['uploadPhoto','readPhoto'].includes(p.op)){check(typeof ksMedia003_==='function','ยังไม่เปิดใช้งานรูปภาพ');return ksMedia003_(actor,p);}
  check(['previewImport','applyImport'].includes(p.op),'คำสั่ง Knowledge Sharing ไม่ถูกต้อง');
  const data=p.dataset,validated=ksPayload001(data),hash=validated.hash,derivedId='KSB-'+ksHash001(data.datasetId+':'+hash).slice(0,16),batchId=p.batchId||derivedId;
  check(/^KSB-[a-f0-9]{16}$/.test(batchId),'batch ID ไม่ถูกต้อง');

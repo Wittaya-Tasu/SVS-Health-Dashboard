@@ -1,17 +1,23 @@
 /* Knowledge Sharing: pure read-only aggregation, one source record per presentation. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.SVSKnowledge=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
+ const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+ const groups=['ธุรกิจในเครือ CP','ธุรกิจในเครือ CPF','หน่วยงานคู่ค้า/ลูกค้า','หน่วยงานภายนอก','งานสัมมนาระดับนานาชาติ','อื่นๆ'];
+ function normalizeRecord(record){const r={...record},old=r.audienceGroup,map={'ภายใน CPF (BU สุกร)':'ธุรกิจในเครือ CPF','ภายใน CPF (BU อื่น)':'ธุรกิจในเครือ CPF','ภายในเครือ CP (ตปท)':'ธุรกิจในเครือ CP','ฟาร์มลูกค้าอาหารสัตว์':'หน่วยงานคู่ค้า/ลูกค้า','หน่วยงานอื่นๆ ภายนอก':'หน่วยงานภายนอก'};r.audienceGroup=map[old]||old;if(r.channel==='hybrid'){r.channel='other';r.channelOther='ผสมผสาน (Hybrid)';}if(r.reach==='นานาชาติ'||old==='ภายในเครือ CP (ตปท)')r.reach='ต่างประเทศ';for(const k of ['country','channelOther','audienceGroupOther','recipientOrganization'])if(typeof r[k]!=='string')r[k]='';if(!Object.hasOwn(r,'durationDays'))r.durationDays=['day','range'].includes(r.datePrecision)&&r.dateStart&&r.dateEnd?Math.round((Date.parse(r.dateEnd)-Date.parse(r.dateStart))/86400000)+1:null;if(!Array.isArray(r.photoIds))r.photoIds=[];return r;}
+ function thaiDate(value){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value||'');return m?`${Number(m[3])} ${months[Number(m[2])-1]} ${Number(m[1])+543}`:'';}
+ function dateLabel(r){return r.dateStart?thaiDate(r.dateStart)+(r.dateEnd&&r.dateEnd!==r.dateStart?' – '+thaiDate(r.dateEnd):''):`${months[r.month-1]||''} ${r.year+543}`;}
+ function channelLabel(r){return {online:'Online',onsite:'Onsite',other:'Other'+(r.channelOther?' · '+r.channelOther:''),hybrid:'Other · ผสมผสาน (Hybrid)'}[r.channel]||r.channel;}
  function select(data,filter={}){
   const q=String(filter.search||'').trim().toLocaleLowerCase('th');
   const people=new Map(data.speakers.map(p=>[p.id,p]));
   return data.records.filter(r=>
    (!filter.year||filter.year==='all'||r.year===Number(filter.year))&&
-   (!filter.scope||filter.scope==='all'||(filter.scope==='outside'?r.outsideSwineBU:r.audienceGroup===filter.scope))&&
+   (!filter.scope||filter.scope==='all'||(filter.scope==='outside'?r.outsideSwineBU===true:r.audienceGroup===filter.scope))&&
    (!filter.reach||filter.reach==='all'||r.reach===filter.reach)&&
    (!filter.channel||filter.channel==='all'||r.channel===filter.channel)&&
    (!filter.category||filter.category==='all'||r.categories.includes(filter.category))&&
    (!filter.person||filter.person==='all'||r.speakerIds.includes(filter.person))&&
-   (!q||[r.title,r.location||'ไม่ระบุสถานที่',r.notes,r.audienceGroup,...r.speakerIds.map(id=>people.get(id)?.displayName||'')].join(' ').toLocaleLowerCase('th').includes(q))
+   (!q||[r.title,r.location||'ไม่ระบุสถานที่',r.recipientOrganization,r.country,r.notes,r.audienceGroup,r.audienceGroupOther,...r.speakerIds.map(id=>people.get(id)?.displayName||'')].join(' ').toLocaleLowerCase('th').includes(q))
   );
  }
  function summarize(records){
@@ -32,7 +38,7 @@
   if(members.size!==data.members.length)throw Error('Duplicate member IDs');
   const records=data.records.map(r=>{
    if(!Array.isArray(r.memberIds)||r.memberIds.some(id=>!members.has(id)))throw Error('Unknown member link');
-   return {...r,speakerIds:[...new Set(r.memberIds)]};
+   return {...normalizeRecord(r),speakerIds:[...new Set(r.memberIds)]};
   });
   return {...data,speakers:data.members,records,speakerLinks:data.memberLinks,
    reviewItems:data.reviewItems.filter(i=>i.status!=='resolved')};
@@ -47,7 +53,7 @@
  function dashboard(data,records){
   const tags=records.flatMap(r=>(r.categories.length?r.categories:['ไม่ระบุหมวด']).map(label=>({label,record:r}))),total=tags.length;
   const categories=[...new Set(tags.map(t=>t.label))].map(label=>({label,presentations:tags.filter(t=>t.label===label).length})).sort((a,b)=>b.presentations-a.presentations||a.label.localeCompare(b.label));
-  return {annual:yearly(records,[...new Set(data.records.map(r=>r.year))].sort()),people:bySpeaker(data,records),places:topGroups(records,r=>r.location||'ไม่ระบุสถานที่'),groups:grouped(records,r=>r.audienceGroup),channels:grouped(records,r=>({onsite:'ณ สถานที่',online:'ออนไลน์',hybrid:'ผสมผสาน'}[r.channel]||r.channel)),categories:categories.map(g=>({...g,share:total?g.presentations/total:0})),tagCount:total};
+  return {annual:yearly(records,[...new Set(data.records.map(r=>r.year))].sort()).map(g=>({...g,label:String(g.year+543)})),people:bySpeaker(data,records),places:topGroups(records,r=>r.location||'ไม่ระบุสถานที่'),groups:grouped(records,r=>r.audienceGroup+(r.audienceGroup==='อื่นๆ'&&r.audienceGroupOther?' · '+r.audienceGroupOther:'')),channels:grouped(records,r=>({online:'Online',onsite:'Onsite',other:'Other',hybrid:'Other'}[r.channel]||r.channel)),categories:categories.map(g=>({...g,share:total?g.presentations/total:0})),tagCount:total};
  }
- return {select,summarize,grouped,bySpeaker,yearly,memberView,memberHistory,topGroups,dashboard};
+ return {select,summarize,grouped,bySpeaker,yearly,memberView,memberHistory,topGroups,dashboard,months,groups,normalizeRecord,thaiDate,dateLabel,channelLabel};
 });
