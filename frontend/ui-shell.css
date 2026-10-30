@@ -1,4 +1,24 @@
 /* SVS v032: shared, compact interface. Export documents retain their original styles. */
+/* SVS062: the percentage summary shares the monthly table's filters and scope. */
+.lab-summary-layout062{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(340px,1fr);gap:24px;align-items:start}
+.lab-summary-layout062>#labSummary019{min-width:0}
+.lab-summary-layout062 .tablewrap{max-width:100%;min-width:0}
+.lab-percent062{min-width:0;padding:18px;border:1px solid #dfe8e6;border-radius:10px;background:#fbfdfc}
+.lab-percent062>h3{margin:0;font-size:1.05rem;color:#123d43}
+.lab-percent-scope062,.lab-percent-note062{font-size:.75rem;color:#617b79;line-height:1.6;margin:6px 0 14px}
+.lab-percent-note062{margin:12px 0 0}
+.lab-percent-table062{width:100%;border-collapse:collapse;font:inherit;font-size:.83rem;line-height:1.5}
+.lab-percent-table062 th,.lab-percent-table062 td{padding:12px 8px;border-bottom:1px solid #e0e9e6;text-align:left;vertical-align:top}
+.lab-percent-table062 thead th{background:#eaf3ef;font-size:.75rem;white-space:nowrap;color:#4b6863}
+.lab-percent-table062 tbody th{width:48%;font-weight:600;overflow-wrap:anywhere}
+.lab-percent-table062 tbody td{width:26%;white-space:nowrap}
+.lab-percent-table062 strong{font-size:1rem}
+.lab-percent-table062 small{display:block;font-size:.7rem;font-weight:400;color:#677f79;margin-top:3px;white-space:normal}
+.lab-percent-table062 .lab-pass014{color:#155b36}
+.lab-percent-table062 .lab-fail014{color:#9e1d32}
+.lab-percent-bar062{height:7px;display:flex;overflow:hidden;border-radius:4px;background:#e8eeee;margin-top:8px}
+.lab-percent-bar062 i{display:block;height:100%}
+@media(max-width:1100px){.lab-summary-layout062{grid-template-columns:minmax(0,1fr)}.lab-percent062{padding:14px}.lab-percent-table062 tbody th{width:50%}}
 /* SVS061: retain empty region/category space for members with a small farm list. */
 .aligned-board .farm-columns{min-height:72px;align-content:start}
 .lab-history-wrap061{max-width:100%;border:1px solid #dfe7e8;border-radius:8px}
