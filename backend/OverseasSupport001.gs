@@ -1,6 +1,6 @@
 /** SVS063. Authenticated, shared overseas histories; private attachments. */
 const OS063={journal:'OverseasSupport001',headers:['requestId','recordId','actorId','requestHash','baseRevision','revision','previousHash','recordHash','recordJson','at','state'],files:'OverseasSupportFiles001',fileHeaders:['id','recordId','ownerId','uploadRequestId','requestHash','name','mime','bytes','driveId','previewDriveId','reportDriveId','at','state'],maxBytes:20*1024*1024};
-function osHash063_(value){return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,Array.isArray(value)?value:JSON.stringify(value),Utilities.Charset.UTF_8).map(b=>((b+256)%256).toString(16).padStart(2,'0')).join('');}
+function osHash063_(value){const digest=Array.isArray(value)?Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,value):Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,JSON.stringify(value),Utilities.Charset.UTF_8);return digest.map(b=>((b+256)%256).toString(16).padStart(2,'0')).join('');}
 function osTable063_(name,headers,create){
  let s=book().getSheetByName(name);if(!s&&!create)return null;
  if(!s)s=book().insertSheet(name);

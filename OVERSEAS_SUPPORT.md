@@ -39,7 +39,7 @@ API `overseasSupport063` ใช้ `protocol: 1` และ op `read`, `createRec
 
 ## การตรวจสอบก่อนเผยแพร่
 
-- Backend ใหม่ 10/10 tests ผ่าน: ไม่มีการเขียนเมื่ออ่าน, identity/บทบาท/สมาชิก/วันที่/จำนวนวัน, ประวัติร่วม, revisions, retries, audit/commit interruption, 4 รูป + PDF, private reads, media signatures/limits, cross-record guards และ journal integrity
+- Backend ใหม่ 11/11 tests ผ่าน: ไม่มีการเขียนเมื่ออ่าน, identity/บทบาท/สมาชิก/วันที่/จำนวนวัน, ประวัติร่วม, revisions, retries, audit/commit interruption, 4 รูป + PDF, PDF ขนาด 20 MiB ภายใต้ request limit จริง, digest overload ของ byte array, private reads, media signatures/limits, cross-record guards และ journal integrity
 - Current Backend เดิม 38/38 tests ผ่าน: importer, edits, details/media และ create ของ Knowledge Sharing
 - Repository Node tests 34/34 ผ่าน (รวม legacy Backend)
 - Browser SVS063 ผ่านกับ Backend ปัจจุบันแบบ in-memory/intercept ทั้งหมด: ฟอร์ม/แท็บ, 4 รูปและ PDF, ดาวน์โหลด PDF ตรงต้นฉบับ, ตัด response หลัง create/upload/attach แล้วลองซ้ำ, ประวัติและสิทธิ์ของผู้ร่วมทริป, สมาชิกอื่นอ่านอย่างเดียว, escaping, ตัวกรอง และจอ 390–1920 px
