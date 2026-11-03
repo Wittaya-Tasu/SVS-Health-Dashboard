@@ -25,9 +25,16 @@ function osCommit063_(actor,row,before){
  row.state='COMMITTED';osWrite063_(OS063.journal,OS063.headers,row,row._row);
  return {record:JSON.parse(row.recordJson),alreadySaved:false};
 }
+function osCountryInput064_(data){
+ check(typeof SVSCountries064!=='undefined'&&SVSCountries064.version===1,'รายชื่อประเทศยังไม่พร้อม กรุณาแจ้ง Admin');
+ const country=typeof data.countryCode==='string'?SVSCountries064.get(data.countryCode):null;
+ check(country,'กรุณารีเฟรชหน้าเว็บ แล้วเลือกทวีปและประเทศจากรายการ');
+ check(data.continentCode===country.continent,'ประเทศไม่ตรงกับทวีปที่เลือก');
+ return {country:country.name,countryCode:country.code,continentCode:country.continent};
+}
 function osInput063_(actor,p,old,files){
  const d=p.data||{},creatorId=old?old.createdBy:actor.id,users=rows('Users');
- check(typeof d.country==='string'&&d.country.trim()&&d.country.length<=100,'กรุณาระบุประเทศ (ไม่เกิน 100 ตัวอักษร)');
+ const country=osCountryInput064_(d);
  check(dateOK(d.date),'กรุณาระบุวันที่เดินทางให้ถูกต้อง');
  check(typeof d.days==='number'&&Number.isFinite(d.days)&&d.days>0&&d.days<=3650&&Number.isInteger(d.days*2),'จำนวนวันต้องมากกว่า 0 ไม่เกิน 3650 วัน ระบุครึ่งวันได้');
  check(typeof d.summary==='string'&&d.summary.trim()&&d.summary.length<=10000,'กรุณาสรุปงาน (ไม่เกิน 10000 ตัวอักษร)');
@@ -37,7 +44,7 @@ function osInput063_(actor,p,old,files){
  const photoIds=d.photoIds||[];check(Array.isArray(photoIds)&&photoIds.length<=4&&new Set(photoIds).size===photoIds.length,'แนบรูปภาพได้สูงสุด 4 รูป');
  const pdfId=d.pdfId||null;check(pdfId===null||typeof pdfId==='string','ไฟล์ PDF ไม่ถูกต้อง');
  for(const item of [...photoIds.map(id=>({id,pdf:false})),...(pdfId?[{id:pdfId,pdf:true}]:[])]){const f=files.find(f=>f.id===item.id&&f.recordId===old?.id&&f.state==='READY');check(f&&(actor.role==='Admin'||f.ownerId===actor.id||(old.photoIds||[]).includes(item.id)||old.pdfId===item.id),'ไฟล์ไม่ตรงรายการหรือไม่มีสิทธิ์แนบไฟล์');check(item.pdf?f.mime==='application/pdf':['image/jpeg','image/png','image/webp'].includes(f.mime),'ชนิดไฟล์แนบไม่ถูกต้อง');}
- return {country:d.country.trim(),date:d.date,days:d.days,summary:d.summary.trim(),participants,photoIds,pdfId};
+ return {...country,date:d.date,days:d.days,summary:d.summary.trim(),participants,photoIds,pdfId};
 }
 function osSave063_(actor,p){
  check(typeof p.requestId==='string'&&/^OSR-[a-zA-Z0-9-]{16,80}$/.test(p.requestId),'รหัสคำขอบันทึกไม่ถูกต้อง');
@@ -77,7 +84,7 @@ function overseasSupport063(actor,p){
  check(p.protocol===1,'กรุณารีเฟรชหน้าเว็บเป็นรุ่นล่าสุด');
  if(p.op==='read'){
   const records=osEffective063_(),members=new Map(rows('Users').filter(u=>u.status==='ACTIVE').map(u=>[u.id,{id:u.id,name:u.name,active:true}]));for(const r of records)for(const m of r.participants)if(!members.has(m.id))members.set(m.id,{...m,active:false});
-  const ids=new Set(records.flatMap(r=>[...r.photoIds,...(r.pdfId?[r.pdfId]:[])]));return {protocol:1,records,members:[...members.values()],files:osRows063_(OS063.files,OS063.fileHeaders).filter(f=>f.state==='READY'&&ids.has(f.id)).map(osFilePublic063_),access:{editableRecordIds:records.filter(r=>osCanEdit063_(actor,r)).map(r=>r.id),actorId:actor.id,actorName:actor.name}};
+  const ids=new Set(records.flatMap(r=>[...r.photoIds,...(r.pdfId?[r.pdfId]:[])]));return {protocol:1,countryProtocol:typeof SVSCountries064!=='undefined'&&SVSCountries064.version===1?1:0,records,members:[...members.values()],files:osRows063_(OS063.files,OS063.fileHeaders).filter(f=>f.state==='READY'&&ids.has(f.id)).map(osFilePublic063_),access:{editableRecordIds:records.filter(r=>osCanEdit063_(actor,r)).map(r=>r.id),actorId:actor.id,actorName:actor.name}};
  }
  if(p.op==='readFile'){
   const record=osEffective063_().find(r=>r.id===p.recordId),file=osRows063_(OS063.files,OS063.fileHeaders).find(f=>f.id===p.fileId&&f.recordId===record?.id&&f.state==='READY');check(file&&(record.photoIds.includes(file.id)||record.pdfId===file.id||actor.id===file.ownerId||actor.role==='Admin'),'ไม่พบไฟล์หรือไม่มีสิทธิ์อ่าน');
