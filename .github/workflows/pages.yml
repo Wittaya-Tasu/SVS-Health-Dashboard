@@ -31,7 +31,7 @@ jobs:
       - run: node --check frontend/knowledge-sharing-core.js && node --check frontend/knowledge-sharing-ui.js && node --check frontend/knowledge-sharing-import.js && node --check frontend/knowledge-sharing-bridge.js
       - run: node --check frontend/knowledge-sharing-editor.js && node --check frontend/knowledge-sharing-charts.js && node --check frontend/knowledge-sharing-export.js
       - run: node --check frontend/knowledge-sharing-photos.js
-      - run: node --check frontend/overseas-support.js && node --check frontend/countries064.js && node --check frontend/overseas-core064.js && node --check frontend/overseas-dashboard064.js
+      - run: node --check frontend/overseas-export066.js && node --check frontend/overseas-support.js && node --check frontend/countries064.js && node --check frontend/overseas-core064.js && node --check frontend/overseas-dashboard064.js
       - run: node --test tests/backend.test.cjs tests/knowledge-sharing.test.cjs tests/overseas064.test.cjs
 
       - uses: actions/configure-pages@v5

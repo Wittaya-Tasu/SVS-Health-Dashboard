@@ -30,3 +30,7 @@
 .os-roster-table065 button{font-size:.78rem;padding:6px 9px;white-space:nowrap}
 @media(max-width:1050px){.os-charts065{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.os-chart-panel065{padding:16px}.os-chart-panel065 h2{font-size:1rem}.os-bar-row065{grid-template-columns:minmax(82px,105px) minmax(20px,1fr) 52px;gap:8px;font-size:.78rem}.os-bar-track065{height:22px}.os-bar-row065 strong{font-size:.84rem}.os-bar-row065 small{font-size:.65rem}.os-country-table064 .os-roster-row065>td{padding:0 5px 12px}.os-inline-people065{padding:12px 8px}.os-country-table064 .os-roster-table065 th,.os-country-table064 .os-roster-table065 td{padding:9px 5px}.os-roster-table065 button{font-size:.7rem;padding:5px 7px}}
+.os-actions063>label{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.82rem;color:#607971;min-width:0}
+.os-actions063 [data-os-export-content]{font-size:.82rem;max-width:100%;padding:8px 10px}
+.os-actions063 [data-os-export-status]{font-size:.78rem;color:#176b67}
+.os-export-note066{font-size:.75rem;margin:4px 0 12px}

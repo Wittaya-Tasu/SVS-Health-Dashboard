@@ -82,9 +82,16 @@ function osUpload063_(actor,p){
 function overseasSupport063(actor,p){
  const user=rows('Users').find(u=>u.id===actor.id&&u.status==='ACTIVE');check(user&&['Admin','Operation','Management'].includes(user.role),'บัญชีไม่ได้รับอนุญาต');actor=user;
  check(p.protocol===1,'กรุณารีเฟรชหน้าเว็บเป็นรุ่นล่าสุด');
+ if(p.op==='prepareExport'){
+  check(LockService.getScriptLock().hasLock(),'ต้องเตรียมรายงานผ่าน script lock');
+  check(['png','pdf'].includes(p.format),'รูปแบบไฟล์ไม่ถูกต้อง');
+  const filters=p.filters||{};check(filters&&typeof filters==='object'&&!Array.isArray(filters)&&JSON.stringify(filters).length<=30000,'ตัวกรองรายงานไม่ถูกต้องหรือยาวเกินกำหนด');
+  const result={id:'EXP-'+uuid(),actorId:actor.id,actorName:actor.name,at:now(),report:'overseasSupport',format:p.format,stage:'prepared',filters,version:'0.1.66'};
+  audit(actor,'Export',result.id,{},result,'เตรียมส่งออก overseasSupport '+p.format+' (ไม่ใช่การยืนยันการบันทึกบนเครื่อง)');return result;
+ }
  if(p.op==='read'){
   const records=osEffective063_(),members=new Map(rows('Users').filter(u=>u.status==='ACTIVE').map(u=>[u.id,{id:u.id,name:u.name,active:true}]));for(const r of records)for(const m of r.participants)if(!members.has(m.id))members.set(m.id,{...m,active:false});
-  const ids=new Set(records.flatMap(r=>[...r.photoIds,...(r.pdfId?[r.pdfId]:[])]));return {protocol:1,countryProtocol:typeof SVSCountries064!=='undefined'&&SVSCountries064.version===1?1:0,records,members:[...members.values()],files:osRows063_(OS063.files,OS063.fileHeaders).filter(f=>f.state==='READY'&&ids.has(f.id)).map(osFilePublic063_),access:{editableRecordIds:records.filter(r=>osCanEdit063_(actor,r)).map(r=>r.id),actorId:actor.id,actorName:actor.name}};
+  const ids=new Set(records.flatMap(r=>[...r.photoIds,...(r.pdfId?[r.pdfId]:[])]));return {protocol:1,exportProtocol:1,countryProtocol:typeof SVSCountries064!=='undefined'&&SVSCountries064.version===1?1:0,records,members:[...members.values()],files:osRows063_(OS063.files,OS063.fileHeaders).filter(f=>f.state==='READY'&&ids.has(f.id)).map(osFilePublic063_),access:{editableRecordIds:records.filter(r=>osCanEdit063_(actor,r)).map(r=>r.id),actorId:actor.id,actorName:actor.name}};
  }
  if(p.op==='readFile'){
   const record=osEffective063_().find(r=>r.id===p.recordId),file=osRows063_(OS063.files,OS063.fileHeaders).find(f=>f.id===p.fileId&&f.recordId===record?.id&&f.state==='READY');check(file&&(record.photoIds.includes(file.id)||record.pdfId===file.id||actor.id===file.ownerId||actor.role==='Admin'),'ไม่พบไฟล์หรือไม่มีสิทธิ์อ่าน');

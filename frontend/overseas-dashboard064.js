@@ -68,7 +68,7 @@ var SVSOverseasDashboard064=(()=>{
   }
   host.addEventListener('click',activate);host.onkeydown=ev=>{if(!options.isBusy?.()&&(ev.key==='Enter'||ev.key===' ')&&ev.target.hasAttribute('data-os-map-country064')){ev.preventDefault();setFocus(ev.target.dataset.osMapCountry064);}};
   draw();load().then(w=>{world=w;draw();}).catch(err=>{error=err.message;draw();});
-  return {dispose(){disposed=true;host.removeEventListener('click',activate);host.onkeydown=null;}};
+  return {getState(){return {metric,chartCountry,expandedCountries:[...expanded]};},dispose(){disposed=true;host.removeEventListener('click',activate);host.onkeydown=null;}};
  }
- return {mount};
+ return {mount,loadWorld:load};
 })();
