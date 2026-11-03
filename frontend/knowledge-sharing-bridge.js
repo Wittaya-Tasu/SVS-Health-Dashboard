@@ -3,6 +3,7 @@
 let knowledgeSharingView=null;
 function openKnowledgeSharingMember(member){
  if(!state.user)return;
+ if(typeof overseasSupportView!=='undefined'){overseasSupportView?.dispose();overseasSupportView=null;}
  if(knowledgeSharingView)knowledgeSharingView.dispose();
  knowledgeSharingView=SVSKnowledgeUI.mount(document.getElementById('app'),{
   member:member?{name:member.name,position:member.position,userId:member.userId||null}:null,
@@ -28,6 +29,7 @@ function openKnowledgeSharingMember(member){
   onImport:state.user.role==='Admin'&&state.settings?.knowledgeSharingImportProtocol===1?openKnowledgeSharingImport:undefined,
   onBack:()=>{knowledgeSharingView=null;render();}
  });
+ if(typeof memberHistoryTabs063==='function')memberHistoryTabs063('knowledge',member);
 }
 function openKnowledgeSharingImport(){
  if(!state.user||state.user.role!=='Admin'||state.settings?.knowledgeSharingImportProtocol!==1)return;
